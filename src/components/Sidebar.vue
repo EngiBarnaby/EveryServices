@@ -54,7 +54,7 @@ export default {
           icon: "mdi-clipboard-text-outline",
           link: "/service",
         },
-        { title: "Мои записи", icon: "mdi-calendar-month-outline" },
+        { title: "Мои записи", icon: "mdi-calendar-month-outline", link: "/" },
         { title: "Мои клиенты", icon: "mdi-account-outline" },
         { title: "Мои доходы", icon: "mdi-wallet-outline" },
       ],

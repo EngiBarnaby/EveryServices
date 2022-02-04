@@ -63,36 +63,45 @@
       </v-dialog>
     </div>
 
-    <v-row justify="center" class="mt-4">
-      <h1>Ваши услуги</h1>
-    </v-row>
+    <v-container>
+      <v-row justify="center" class="mt-4">
+        <h1>Ваши услуги</h1>
+      </v-row>
 
-    <v-row>
-      <v-col
-        xs="12"
-        sm="6"
-        md="4"
-        v-for="(service, index) in services"
-        :key="index"
-      >
-        <v-card class="mx-auto" max-width="400">
-          <v-img :src="service.img" height="250px"></v-img>
+      <v-row>
+        <v-col
+            xs="12"
+            sm="6"
+            md="3"
+            v-for="(service, index) in services"
+            :key="index"
+        >
+          <v-card class="mx-auto card" min-height="450" max-width="400" elevation="0">
+            <v-img :src="service.img" height="250px"></v-img>
 
-          <v-card-title>{{ service.name }}</v-card-title>
+            <v-card-title class="d-flex justify-space-between align-center">
+                <span>{{ service.name }}</span>
+                <span class="wrapper-watch">{{service.duration}}
+                <v-icon>mdi-clock</v-icon>
+              </span>
+            </v-card-title>
 
-          <v-card-subtitle>{{ service.description }}</v-card-subtitle>
+            <v-card-subtitle>
+              {{ service.description }}
+            </v-card-subtitle>
 
-          <v-card-text
+            <v-card-text
             ><h3>Цена {{ service.cost }}</h3></v-card-text
-          >
-        </v-card>
-      </v-col>
-      <v-col xs="12" sm="6" md="4">
-        <div class="empty-card mx-auto" @click="createDialog = true">
-          <v-icon x-large> mdi-plus </v-icon>
-        </div>
-      </v-col>
-    </v-row>
+            >
+          </v-card>
+        </v-col>
+        <v-col xs="12" sm="6" md="3">
+          <div class="empty-card mx-auto" @click="createDialog = true">
+            <v-icon x-large> mdi-plus </v-icon>
+          </div>
+        </v-col>
+      </v-row>
+    </v-container>
   </div>
 </template>
 
@@ -117,7 +126,7 @@ export default {
   },
 
   methods: {
-    handleFileUpload(){
+    handleFileUpload() {
       this.file = this.$refs.file.files[0];
     },
 
@@ -132,21 +141,17 @@ export default {
 
     async addService() {
       let formData = new FormData();
-      formData.append('img', this.img);
-      formData.append('name', this.name);
-      formData.append('cost', this.cost);
-      formData.append('duration', this.duration);
-      formData.append('description', this.description);
+      formData.append("img", this.img);
+      formData.append("name", this.name);
+      formData.append("cost", this.cost);
+      formData.append("duration", this.duration);
+      formData.append("description", this.description);
       await axiosInstance
-        .post(
-          "services/services/",
-          formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          }
-        )
+        .post("services/services/", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
         .then(function () {
           console.log("SUCCESS!!");
         })
@@ -173,8 +178,8 @@ export default {
 
 <style scoped>
 .empty-card {
-  height: 300px;
-  width: 300px;
+  height: 450px;
+  width: 400px;
   border: 1px solid #7b7b7b;
   border-radius: 25px;
   display: flex;
@@ -185,4 +190,14 @@ export default {
 .empty-card:hover {
   cursor: pointer;
 }
+
+.card {
+  padding: 10px;
+  border: 2px solid #a60dbf;
+}
+
+.wrapper-watch {
+  display: flex;
+}
+
 </style>

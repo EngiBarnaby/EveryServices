@@ -93,8 +93,6 @@
                     required
                   ></v-text-field>
 
-                  {{ registrationPhone }}
-
                   <v-text-field
                     v-model="registrationPassword"
                     outlined
