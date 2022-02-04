@@ -70,18 +70,24 @@
 
       <v-row>
         <v-col
-            xs="12"
-            sm="6"
-            md="3"
-            v-for="(service, index) in services"
-            :key="index"
+          xs="12"
+          sm="6"
+          md="3"
+          v-for="(service, index) in services"
+          :key="index"
         >
-          <v-card class="mx-auto card" min-height="450" max-width="400" elevation="0">
+          <v-card
+            class="mx-auto card"
+            min-height="450"
+            max-width="400"
+            elevation="0"
+          >
             <v-img :src="service.img" height="250px"></v-img>
 
             <v-card-title class="d-flex justify-space-between align-center">
-                <span>{{ service.name }}</span>
-                <span class="wrapper-watch">{{service.duration}}
+              <span>{{ service.name }}</span>
+              <span class="wrapper-watch"
+                >{{ service.duration }}
                 <v-icon>mdi-clock</v-icon>
               </span>
             </v-card-title>
@@ -91,7 +97,7 @@
             </v-card-subtitle>
 
             <v-card-text
-            ><h3>Цена {{ service.cost }}</h3></v-card-text
+              ><h3>Цена {{ service.cost }}</h3></v-card-text
             >
           </v-card>
         </v-col>
@@ -199,5 +205,4 @@ export default {
 .wrapper-watch {
   display: flex;
 }
-
 </style>

@@ -1,7 +1,5 @@
 <template>
   <div>
-
-
     <v-tabs v-model="tab" centered align-with-title>
       <v-tabs-slider color="blue"></v-tabs-slider>
 
@@ -40,7 +38,7 @@ export default {
   data() {
     return {
       tab: 0,
-      servicesList : false,
+      servicesList: false,
     };
   },
 };

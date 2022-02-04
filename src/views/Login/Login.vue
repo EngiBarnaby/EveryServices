@@ -33,8 +33,13 @@
                     outlined
                     dense
                     label="Ваш пароль *"
-                    :append-icon="isInvisibleLoginPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                    @click:append="() => (isInvisibleLoginPassword = !isInvisibleLoginPassword)"
+                    :append-icon="
+                      isInvisibleLoginPassword ? 'mdi-eye' : 'mdi-eye-off'
+                    "
+                    @click:append="
+                      () =>
+                        (isInvisibleLoginPassword = !isInvisibleLoginPassword)
+                    "
                     :type="isInvisibleLoginPassword ? 'password' : 'text'"
                     v-model="loginPassword"
                     :rules="[(v) => !!v || 'Обязательное поле']"
@@ -203,7 +208,7 @@ export default {
   },
   data() {
     return {
-      isInvisibleLoginPassword : true,
+      isInvisibleLoginPassword: true,
 
       tab: null,
 
@@ -304,7 +309,7 @@ export default {
         console.log(data);
         this.registrationSuccess = true;
         this.tab = 0;
-        this.clear()
+        this.clear();
       } catch (e) {
         console.log(e);
       }

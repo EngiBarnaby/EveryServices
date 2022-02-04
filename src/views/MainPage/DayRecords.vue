@@ -1,7 +1,6 @@
 ﻿<template>
   <v-row class="fill-height">
     <v-col>
-
       <v-sheet class="calendar">
         <v-calendar
           ref="calendar"
@@ -15,7 +14,6 @@
           :event-color="getEventColor"
           @change="fetchEvents"
         >
-
           <template slot="day-label-header">
             <div class="calendar-header">
               <v-sheet height="64">
@@ -25,7 +23,7 @@
                   </v-btn>
 
                   <div class="current-date">
-                    {{currentDay}}
+                    {{ currentDay }}
                   </div>
 
                   <v-btn fab text small color="grey darken-2" @click="next">
@@ -39,7 +37,6 @@
               </v-sheet>
             </div>
           </template>
-
         </v-calendar>
       </v-sheet>
     </v-col>
@@ -66,9 +63,8 @@ export default {
   }),
 
   computed: {
-
-    currentDay(){
-      return this.focus.split("-")[2]
+    currentDay() {
+      return this.focus.split("-")[2];
     },
 
     parsDay() {
@@ -92,10 +88,10 @@ export default {
     },
   },
 
-  watch : {
-    focus(){
-      console.log(this.focus)
-    }
+  watch: {
+    focus() {
+      console.log(this.focus);
+    },
   },
 
   methods: {
@@ -121,10 +117,10 @@ export default {
     },
 
     async fetchData() {
-      let date = new Date()
-      date = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`
+      let date = new Date();
+      date = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
       try {
-        let { data } = await axiosInstance.get(`records/?date=${date}`)
+        let { data } = await axiosInstance.get(`records/?date=${date}`);
         this.parseRecords(data.results);
       } catch (e) {
         console.log(e);
@@ -132,7 +128,7 @@ export default {
     },
 
     async parseRecords(data) {
-      let array = []
+      let array = [];
       for (let record of data) {
         let { data } = await axiosInstance.get(
           `services/services/${record.service}/`
@@ -146,7 +142,7 @@ export default {
           color: "blue",
           timed: [],
         });
-        this.events = array
+        this.events = array;
       }
     },
 
@@ -172,8 +168,10 @@ export default {
     },
   },
   mounted() {
-    let date = new Date
-    this.focus = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+    let date = new Date();
+    this.focus = `${date.getFullYear()}-${
+      date.getMonth() + 1
+    }-${date.getDate()}`;
     this.$refs.calendar.checkChange();
     this.$refs.calendar.scrollToTime("08:00");
     this.fetchData();
@@ -194,10 +192,9 @@ export default {
 }
 
 .current-date {
-  color : white;
+  color: white;
   padding: 15px;
   border-radius: 50%;
   background-color: #a60dbf;
 }
-
 </style>
