@@ -192,9 +192,16 @@ export default {
 }
 
 .current-date {
+  display: flex;
+  justify-content: center;
+  align-content: center;
   color: white;
   padding: 15px;
   border-radius: 50%;
   background-color: #a60dbf;
+  min-height: 50px;
+  min-width: 50px;
+  max-height: 50px;
+  max-width: 50px;
 }
 </style>
