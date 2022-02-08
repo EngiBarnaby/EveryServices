@@ -82,8 +82,14 @@ export default {
   },
 
   methods: {
-    logInfo() {
-      console.log("It's work")
+
+    setNewValue(date){
+      this.date = date
+    },
+
+    changeValue() {
+      this.$emit("input", this.date);
+      this.$emit("change", this.date);
     },
 
     formatDate(date) {

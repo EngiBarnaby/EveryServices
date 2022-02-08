@@ -1,6 +1,10 @@
 ﻿<template>
   <div>
-    <v-dialog v-model="dialogEventInfo" width="500">
+    <v-dialog
+      v-model="dialogEventInfo"
+      width="500"
+      @click:outside="closeAndClear"
+    >
       <v-card class="pa-4">
         <v-card-title> Добавление услугу </v-card-title>
         <v-form v-model="isValid" @submit.prevent="addRecord">
@@ -75,7 +79,7 @@
             >Добавить</v-btn
           >
 
-          <v-btn outlined color="error">Отмена</v-btn>
+          <v-btn outlined color="error" @click="closeAndClear">Отмена</v-btn>
         </v-form>
       </v-card>
     </v-dialog>
@@ -158,7 +162,7 @@
             >Добавить</v-btn
           >
 
-          <v-btn outlined  color="error">Отмена</v-btn>
+          <v-btn outlined color="error">Отмена</v-btn>
         </v-form>
       </v-card>
     </v-dialog>
@@ -249,8 +253,9 @@
 </template>
 
 <script>
-import DatePicker from "../../components/inputs/DatePicker2";
+import DatePicker from "../../components/inputs/DatePicker";
 import axiosInstance from "../../plugins/axios";
+import Vue from "vue";
 export default {
   components: { DatePicker },
 
@@ -282,6 +287,139 @@ export default {
     date: null,
     time: null,
   }),
+
+  methods: {
+    closeAndClear() {
+      this.cost = null;
+      this.duration = null;
+      this.client_selected = null;
+      this.service_selected = null;
+      this.time = null;
+      this.$refs.date_picker.clear()
+      this.dialogEventInfo = false;
+    },
+
+    eventClicked({ event }) {
+      this.dialogEventInfo = true;
+      this.cost = event.cost;
+      this.duration = event.duration;
+      this.client_selected = event.client;
+      this.service_selected = event.service;
+      this.time = event.startTime;
+      Vue.nextTick(() => this.$refs.date_picker.setNewValue(event.startDate));
+    },
+
+    async addRecord() {
+      let paramas = {
+        service: this.service_selected,
+        client: this.client_selected,
+        cost: this.cost,
+        duration: this.duration,
+        recording_time: this.dateWithTime,
+      };
+
+      let data = await axiosInstance.post("records/", paramas);
+      console.log(data);
+    },
+
+    openAddRecordDialog() {
+      this.addRecordDialog = true;
+    },
+
+    prev() {
+      this.$refs.calendar.prev();
+      this.fetchEvents();
+    },
+    next() {
+      this.$refs.calendar.next();
+      this.fetchEvents();
+    },
+
+    async fetchEvents() {
+      try {
+        let { data } = await axiosInstance.get(`records/?date=${this.parsDay}`);
+        this.parseRecords(data.results);
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    async fetchData() {
+      let date = new Date();
+      date = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
+      try {
+        let { data } = await axiosInstance.get(`records/?date=${date}`);
+        this.parseRecords(data.results);
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    async parseRecords(data) {
+      let array = [];
+      for (let record of data) {
+        let { data } = await axiosInstance.get(
+          `services/services/${record.service}/`
+        );
+        let end_time = this.parseDate(record.end_time);
+        let recording_time = this.parseDate(record.recording_time);
+        let startTime = this.parseTime(record.recording_time);
+        let startDate = this.parseStartDate(record.recording_time);
+        array.push({
+          client: record.client,
+          service: record.service,
+          img: data.img,
+          description: data.description,
+          duration: record.duration,
+          cost: record.cost,
+          name: data.name,
+          start: recording_time,
+          end: end_time,
+          startTime: startTime,
+          startDate: startDate,
+          color: record.color ? record.color : "#e796f5",
+          timed: [],
+        });
+      }
+      this.events = array;
+    },
+
+    async getService(service) {
+      let { data } = await axiosInstance.get(
+        `services/services/${service.service}/`
+      );
+      return data.name;
+    },
+
+    parseStartDate(date) {
+      let currentDate = date.split(".");
+      let day = currentDate[0];
+      let month = currentDate[1];
+      let year = currentDate[2].split(" ")[0];
+      return `${year}-${month}-${day}`;
+    },
+
+    parseTime(date) {
+      let currentDate = date.split(".");
+      let hour = currentDate[2].split(" ")[1].split(":")[0];
+      let minute = currentDate[2].split(" ")[1].split(":")[1];
+      return `${hour}:${minute}`;
+    },
+
+    parseDate(date) {
+      let currentDate = date.split(".");
+      let day = currentDate[0];
+      let month = currentDate[1];
+      let year = currentDate[2].split(" ")[0];
+      let hour = currentDate[2].split(" ")[1].split(":")[0];
+      let minute = currentDate[2].split(" ")[1].split(":")[1];
+      return new Date(year, month - 1, day, hour, minute);
+    },
+
+    rnd(a, b) {
+      return Math.floor((b - a + 1) * Math.random()) + a;
+    },
+  },
 
   computed: {
     dateWithTime() {
@@ -321,131 +459,7 @@ export default {
     },
   },
 
-  methods: {
-    eventClicked({ event }) {
-      this.cost = event.cost;
-      this.duration = event.duration;
-      this.client_selected = event.client;
-      this.service_selected = event.service;
-      this.time = event.startTime;
-      this.dialogEventInfo = true;
-    },
 
-    async addRecord() {
-      let paramas = {
-        service: this.service_selected,
-        client: this.client_selected,
-        cost: this.cost,
-        duration: this.duration,
-        recording_time: this.dateWithTime,
-      };
-
-      let data = await axiosInstance.post("records/", paramas);
-      console.log(data);
-    },
-
-    openAddRecordDialog() {
-      this.addRecordDialog = true;
-    },
-
-    getEventColor(event) {
-      return event.color;
-    },
-    prev() {
-      this.$refs.calendar.prev();
-      this.fetchEvents();
-    },
-    next() {
-      this.$refs.calendar.next();
-      this.fetchEvents();
-    },
-
-    async fetchEvents() {
-      try {
-        let { data } = await axiosInstance.get(`records/?date=${this.parsDay}`);
-        this.parseRecords(data.results);
-      } catch (e) {
-        console.log(e);
-      }
-    },
-
-    async fetchData() {
-      let date = new Date();
-      date = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
-      try {
-        let { data } = await axiosInstance.get(`records/?date=${date}`);
-        this.parseRecords(data.results);
-      } catch (e) {
-        console.log(e);
-      }
-    },
-
-    async parseRecords(data) {
-      let array = [];
-      for (let record of data) {
-        let { data } = await axiosInstance.get(
-          `services/services/${record.service}/`
-        );
-        let end_time = this.parseDate(record.end_time);
-        let recording_time = this.parseDate(record.recording_time);
-        let startTime = this.parseTime(record.recording_time);
-        let startDate = this.parseTime(record.recording_time);
-        console.log(record);
-        array.push({
-          client: record.client,
-          service: record.service,
-          img: data.img,
-          description: data.description,
-          duration: record.duration,
-          cost: record.cost,
-          name: data.name,
-          start: recording_time,
-          end: end_time,
-          startTime: startTime,
-          startDate: startDate,
-          color: record.color ? record.color : "#e796f5",
-          timed: [],
-        });
-      }
-      this.events = array;
-    },
-
-    async getService(service) {
-      let { data } = await axiosInstance.get(
-        `services/services/${service.service}/`
-      );
-      return data.name;
-    },
-
-    parseStartDate(date) {
-      let currentDate = date.split(".");
-      let day = currentDate[0];
-      let month = currentDate[1];
-      let year = currentDate[2].split(" ")[0];
-      return `${day}.${month}.${year}`;
-    },
-
-    parseTime(date) {
-      let currentDate = date.split(".");
-      let hour = currentDate[2].split(" ")[1].split(":")[0];
-      let minute = currentDate[2].split(" ")[1].split(":")[1];
-      return `${hour}:${minute}`;
-    },
-
-    parseDate(date) {
-      let currentDate = date.split(".");
-      let day = currentDate[0];
-      let month = currentDate[1];
-      let year = currentDate[2].split(" ")[0];
-      let hour = currentDate[2].split(" ")[1].split(":")[0];
-      let minute = currentDate[2].split(" ")[1].split(":")[1];
-      return new Date(year, month - 1, day, hour, minute);
-    },
-
-    rnd(a, b) {
-      return Math.floor((b - a + 1) * Math.random()) + a;
-    },
-  },
   async mounted() {
     let date = new Date();
     this.focus = `${date.getFullYear()}-${

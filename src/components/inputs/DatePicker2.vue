@@ -35,8 +35,8 @@ export default {
       this.$emit("change", this.date);
     },
 
-    logInfo(){
-      console.log("It's work")
+    logInfo() {
+      console.log("It's work");
     },
 
     clear() {
@@ -57,5 +57,6 @@ export default {
 <style scoped>
 .startDate {
   width: 100% !important;
+  padding: 5px;
 }
 </style>

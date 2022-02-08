@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import DatePicker from "../components/inputs/DatePicker";
+import DatePicker from "../components/inputs/DatePicker2";
 export default {
   name: "Test",
   components: { DatePicker },
