@@ -1,31 +1,21 @@
 const user = {
+  namespaced: true,
 
-  namespaced : true,
-
-  state : {
-    userInfo : {},
+  state: {
+    userInfo: {},
   },
 
-  mutations : {
-
-    SET_USER_INFO(state, data){
-
-      state.userInfo = data
-    }
-
+  mutations: {
+    SET_USER_INFO(state, data) {
+      state.userInfo = data;
+    },
   },
 
-  actions : {
+  actions: {},
 
-
-
+  getters: {
+    getUserInfo: state => state.userInfo,
   },
+};
 
-
-  getters : {
-
-  },
-
-}
-
-export default user
+export default user;

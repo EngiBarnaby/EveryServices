@@ -22,6 +22,7 @@
         </v-tab-item>
       </v-tabs-items>
     </v-tabs>
+
   </div>
 </template>
 

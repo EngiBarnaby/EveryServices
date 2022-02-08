@@ -1,52 +1,263 @@
 ﻿<template>
-  <v-row class="fill-height">
-    <v-col>
-      <v-sheet class="calendar">
-        <v-calendar
-          ref="calendar"
-          v-model="focus"
-          color="primary"
-          type="day"
-          category-show-all
-          :categories="categories"
-          :events="events"
-          locale="ru"
-          :event-color="getEventColor"
-          @change="fetchEvents"
-        >
-          <template slot="day-label-header">
-            <div class="calendar-header">
-              <v-sheet height="64">
-                <v-toolbar flat>
-                  <v-btn fab text small color="grey darken-2" @click="prev">
-                    <v-icon small> mdi-chevron-left </v-icon>
-                  </v-btn>
+  <div>
+    <v-dialog v-model="dialogEventInfo" width="500">
+      <v-card class="pa-4">
+        <v-card-title> Добавление услугу </v-card-title>
+        <v-form v-model="isValid" @submit.prevent="addRecord">
+          <v-autocomplete
+            background-color="white"
+            v-model="service_selected"
+            :items="services"
+            item-text="name"
+            item-value="id"
+            dense
+            outlined
+            label="Услуга"
+            clearable
+            no-data-text="Нет доступных данных"
+          />
 
-                  <div class="current-date">
-                    {{ currentDay }}
-                  </div>
+          <v-autocomplete
+            background-color="white"
+            v-model="client_selected"
+            :items="clients"
+            item-text="name"
+            item-value="id"
+            dense
+            outlined
+            label="Клиент"
+            clearable
+            no-data-text="Нет доступных данных"
+          />
 
-                  <v-btn fab text small color="grey darken-2" @click="next">
-                    <v-icon small> mdi-chevron-right </v-icon>
+          <v-text-field
+            outlined
+            dense
+            v-model="duration"
+            type="time"
+            label="Длительность"
+            :rules="[(v) => !!v || 'Обязательное поле']"
+          ></v-text-field>
+
+          <v-text-field
+            type="number"
+            v-model="cost"
+            outlined
+            dense
+            label="Цена"
+          ></v-text-field>
+
+          <DatePicker
+            class="mb-4"
+            color="white"
+            hide-details
+            v-model="date"
+            dense
+            label="Дата записи"
+            outlined
+            background-color="white"
+            ref="date_picker"
+          />
+
+          <v-time-picker
+            v-model="time"
+            class="mt-4"
+            format="24hr"
+            color="#a60dbf"
+          ></v-time-picker>
+
+          <v-btn
+            outlined
+            color="info"
+            :disabled="!isValid"
+            type="submit"
+            class="mr-4"
+            >Добавить</v-btn
+          >
+
+          <v-btn outlined color="error">Отмена</v-btn>
+        </v-form>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog width="500px" v-model="addRecordDialog">
+      <v-card class="pa-4">
+        <v-card-title> Добавление услугу </v-card-title>
+        <v-form v-model="isValid" @submit.prevent="addRecord">
+          <v-autocomplete
+            background-color="white"
+            v-model="service_selected"
+            :items="services"
+            item-text="name"
+            item-value="id"
+            dense
+            outlined
+            label="Услуга"
+            clearable
+            no-data-text="Нет доступных данных"
+          />
+
+          <v-autocomplete
+            background-color="white"
+            v-model="client_selected"
+            :items="clients"
+            item-text="name"
+            item-value="id"
+            dense
+            outlined
+            label="Клиент"
+            clearable
+            no-data-text="Нет доступных данных"
+          />
+
+          <v-text-field
+            outlined
+            dense
+            v-model="duration"
+            type="time"
+            label="Длительность"
+            :rules="[(v) => !!v || 'Обязательное поле']"
+          ></v-text-field>
+
+          <v-text-field
+            type="number"
+            v-model="cost"
+            outlined
+            dense
+            label="Цена"
+          ></v-text-field>
+
+          <div>
+            <DatePicker
+              class="mb-4"
+              color="white"
+              hide-details
+              v-model="date"
+              dense
+              label="Дата записи"
+              outlined
+              background-color="white"
+            />
+          </div>
+
+          <div class="d-flex justify-center">
+            <v-time-picker
+              v-model="time"
+              class="mt-4"
+              format="24hr"
+              color="#a60dbf"
+            ></v-time-picker>
+          </div>
+
+          <v-btn
+            outlined
+            color="info"
+            :disabled="!isValid"
+            type="submit"
+            class="mr-4"
+            >Добавить</v-btn
+          >
+
+          <v-btn outlined  color="error">Отмена</v-btn>
+        </v-form>
+      </v-card>
+    </v-dialog>
+
+    <v-row class="fill-height" justify="end">
+      <v-col>
+        <v-sheet class="calendar">
+          <v-calendar
+            ref="calendar"
+            v-model="focus"
+            color="primary"
+            type="day"
+            category-show-all
+            :events="events"
+            locale="ru"
+            @click:event="eventClicked"
+          >
+            <template slot="day-header">
+              <v-row justify="end">
+                <div class="add-records">
+                  <v-btn icon @click="openAddRecordDialog">
+                    <v-icon style="color: white"> mdi-plus </v-icon>
                   </v-btn>
-                  <v-toolbar-title v-if="$refs.calendar">
-                    {{ $refs.calendar.title }}
-                  </v-toolbar-title>
-                  <v-spacer></v-spacer>
-                </v-toolbar>
-              </v-sheet>
-            </div>
-          </template>
-        </v-calendar>
-      </v-sheet>
-    </v-col>
-  </v-row>
+                </div>
+              </v-row>
+            </template>
+
+            <template slot="day-label-header">
+              <div class="calendar-header">
+                <v-sheet height="64">
+                  <v-toolbar flat>
+                    <v-btn fab text small color="grey darken-2" @click="prev">
+                      <v-icon small> mdi-chevron-left </v-icon>
+                    </v-btn>
+
+                    <div class="current-date">
+                      {{ currentDay }}
+                    </div>
+
+                    <v-btn fab text small color="grey darken-2" @click="next">
+                      <v-icon small> mdi-chevron-right </v-icon>
+                    </v-btn>
+                    <v-spacer></v-spacer>
+                  </v-toolbar>
+                </v-sheet>
+              </div>
+            </template>
+
+            <template v-slot:event="{ event }">
+              <div class="wrapper-event-title">
+                <v-menu open-on-hover top offset-x>
+                  <template v-slot:activator="{ on, attrs }">
+                    <span v-bind="attrs" v-on="on" class="event-title">
+                      Услуга : {{ event.name
+                      }}<v-icon small>mdi-help-circle</v-icon>
+                    </span>
+                  </template>
+
+                  <v-card max-width="200" min-width="200" elevation="0">
+                    <v-img
+                      class="event-img"
+                      :src="event.img"
+                      height="105"
+                      width="85"
+                    ></v-img>
+                    <v-card-title>
+                      <p>{{ event.name }}</p>
+                    </v-card-title>
+                    <v-card-subtitle>
+                      <p>{{ event.description }}</p>
+                    </v-card-subtitle>
+                    <v-card-text>
+                      <p class="cost-title">Цена :{{ event.cost }} &#8381;</p>
+                      <p class="duration-title">
+                        Время : {{ event.duration }}
+                        <v-icon small>mdi-clock</v-icon>
+                      </p>
+                    </v-card-text>
+                  </v-card>
+                </v-menu>
+              </div>
+            </template>
+          </v-calendar>
+        </v-sheet>
+      </v-col>
+    </v-row>
+  </div>
 </template>
 
 <script>
+import DatePicker from "../../components/inputs/DatePicker2";
 import axiosInstance from "../../plugins/axios";
 export default {
+  components: { DatePicker },
+
   data: () => ({
+    addRecordDialog: false,
+    dialogEventInfo: false,
+
     focus: "",
     events: [],
     colors: [
@@ -58,13 +269,32 @@ export default {
       "orange",
       "grey darken-1",
     ],
-    names: [],
-    categories: ["Ваш график"],
+
+    isValid: false,
+
+    clients: [],
+    services: [],
+
+    cost: null,
+    duration: null,
+    client_selected: null,
+    service_selected: null,
+    date: null,
+    time: null,
   }),
 
   computed: {
+    dateWithTime() {
+      return `${this.date} ${this.time}`;
+    },
+
     currentDay() {
-      return this.focus.split("-")[2];
+      let currentDay = this.focus.split("-")[2];
+      if (currentDay[0] == 0) {
+        return currentDay[1];
+      } else {
+        return currentDay;
+      }
     },
 
     parsDay() {
@@ -77,6 +307,9 @@ export default {
       let eventsData = [];
       for (let i of this.events) {
         eventsData.push({
+          description: i.description,
+          duration: i.duration,
+          cost: i.cost,
           id: i.id,
           name: i.title,
           start: i.start_planning,
@@ -88,13 +321,33 @@ export default {
     },
   },
 
-  watch: {
-    focus() {
-      console.log(this.focus);
-    },
-  },
-
   methods: {
+    eventClicked({ event }) {
+      this.cost = event.cost;
+      this.duration = event.duration;
+      this.client_selected = event.client;
+      this.service_selected = event.service;
+      this.time = event.startTime;
+      this.dialogEventInfo = true;
+    },
+
+    async addRecord() {
+      let paramas = {
+        service: this.service_selected,
+        client: this.client_selected,
+        cost: this.cost,
+        duration: this.duration,
+        recording_time: this.dateWithTime,
+      };
+
+      let data = await axiosInstance.post("records/", paramas);
+      console.log(data);
+    },
+
+    openAddRecordDialog() {
+      this.addRecordDialog = true;
+    },
+
     getEventColor(event) {
       return event.color;
     },
@@ -135,15 +388,26 @@ export default {
         );
         let end_time = this.parseDate(record.end_time);
         let recording_time = this.parseDate(record.recording_time);
+        let startTime = this.parseTime(record.recording_time);
+        let startDate = this.parseTime(record.recording_time);
+        console.log(record);
         array.push({
+          client: record.client,
+          service: record.service,
+          img: data.img,
+          description: data.description,
+          duration: record.duration,
+          cost: record.cost,
           name: data.name,
           start: recording_time,
           end: end_time,
-          color: "blue",
+          startTime: startTime,
+          startDate: startDate,
+          color: record.color ? record.color : "#e796f5",
           timed: [],
         });
-        this.events = array;
       }
+      this.events = array;
     },
 
     async getService(service) {
@@ -151,6 +415,21 @@ export default {
         `services/services/${service.service}/`
       );
       return data.name;
+    },
+
+    parseStartDate(date) {
+      let currentDate = date.split(".");
+      let day = currentDate[0];
+      let month = currentDate[1];
+      let year = currentDate[2].split(" ")[0];
+      return `${day}.${month}.${year}`;
+    },
+
+    parseTime(date) {
+      let currentDate = date.split(".");
+      let hour = currentDate[2].split(" ")[1].split(":")[0];
+      let minute = currentDate[2].split(" ")[1].split(":")[1];
+      return `${hour}:${minute}`;
     },
 
     parseDate(date) {
@@ -167,26 +446,77 @@ export default {
       return Math.floor((b - a + 1) * Math.random()) + a;
     },
   },
-  mounted() {
+  async mounted() {
     let date = new Date();
     this.focus = `${date.getFullYear()}-${
       date.getMonth() + 1
     }-${date.getDate()}`;
-    this.$refs.calendar.checkChange();
-    this.$refs.calendar.scrollToTime("08:00");
-    this.fetchData();
+
+    await this.fetchData();
+
+    let clients = await axiosInstance.get("clients/contacts/opt");
+    this.clients = clients.data;
+
+    let services = await axiosInstance.get("services/services/opt");
+    this.services = services.data;
   },
 };
 </script>
 
 <style scoped>
+.v-application p {
+  margin-bottom: 0px !important;
+}
+
+.add-records {
+  color: black;
+  display: inline;
+  margin-bottom: 20px;
+  margin-right: 20px;
+  background-color: #a60dbf;
+  border-radius: 50%;
+  color: white !important;
+}
+
+.v-calendar-daily {
+  border: 2px solid #a60dbf;
+}
+
+.duration-title {
+  font-weight: bold;
+  display: flex;
+}
+
+.cost-title {
+  font-weight: bold;
+}
+
+.event-img {
+  margin-left: 20px;
+  margin-top: 5px;
+  border-radius: 15px;
+}
+
+.event-title {
+  color: black;
+  margin-left: 10px;
+}
+
+.wrapper-event-title {
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+}
+
 .calendar {
+  position: relative;
   margin-left: 100px;
   height: 90vh;
   width: 80%;
 }
 
 .calendar-header {
+  position: relative;
   display: flex;
   justify-content: center;
 }

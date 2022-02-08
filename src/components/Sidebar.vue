@@ -1,4 +1,3 @@
-z
 <template>
   <div>
     <v-navigation-drawer
@@ -13,12 +12,12 @@ z
       <template v-slot:prepend>
         <v-list-item two-line>
           <v-list-item-avatar>
-            <img src="https://randomuser.me/api/portraits/women/81.jpg" />
+            <img :src="getUserInfo.user.avatar" />
           </v-list-item-avatar>
 
           <v-list-item-content>
-            <v-list-item-title>Jane Smith</v-list-item-title>
-            <v-list-item-subtitle>Logged In</v-list-item-subtitle>
+            <v-list-item-title class="white--text">{{getUserInfo.user.first_name}} {{getUserInfo.user.last_name}}</v-list-item-title>
+            <v-list-item-subtitle class="white--text">Перейти к профилю</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
       </template>
@@ -43,6 +42,7 @@ z
 </template>
 
 <script>
+import { mapGetters } from "vuex"
 export default {
   name: "Sidebar",
 
@@ -60,6 +60,14 @@ export default {
       ],
     };
   },
+
+  computed : {
+    ...mapGetters("user", ["getUserInfo"])
+  },
+
+  mounted() {
+    console.log(this.getUserInfo)
+  }
 };
 </script>
 

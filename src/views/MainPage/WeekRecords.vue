@@ -5,14 +5,6 @@
         <v-sheet height="64">
           <v-toolbar flat>
             <v-btn
-              outlined
-              class="mr-4"
-              color="grey darken-2"
-              @click="setToday"
-            >
-              Сегодня
-            </v-btn>
-            <v-btn
               fab
               text
               small
@@ -48,6 +40,7 @@
             :event-overlap-threshold="30"
             :event-color="getEventColor"
             @change="getEvents"
+            :weekdays="weekView"
           ></v-calendar>
         </v-sheet>
       </v-col>
@@ -63,7 +56,18 @@ export default {
     return {
       value: "",
       today: "",
+      weekView: this.weekdays
+        ? this.weekdays.split(".")
+        : [1, 2, 3, 4, 5, 6, 0],
     };
+  },
+
+  mounted() {
+    let date = new Date();
+    this.value = `${date.getFullYear()}-${
+      date.getMonth() + 1
+    }-${date.getDate()}`;
+    this.$refs.calendar.checkChange();
   },
 };
 </script>

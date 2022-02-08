@@ -96,9 +96,7 @@
               {{ service.description }}
             </v-card-subtitle>
 
-            <v-card-text
-              ><h3>Цена {{ service.cost }}</h3></v-card-text
-            >
+            <h3 class="price">Цена {{ service.cost }}</h3>
           </v-card>
         </v-col>
         <v-col xs="12" sm="6" md="3">
@@ -183,6 +181,13 @@ export default {
 </script>
 
 <style scoped>
+
+.price {
+  position: absolute;
+  bottom : 10px;
+  left : 10px;
+}
+
 .empty-card {
   height: 450px;
   width: 400px;
