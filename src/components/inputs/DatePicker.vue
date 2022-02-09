@@ -82,9 +82,8 @@ export default {
   },
 
   methods: {
-
-    setNewValue(date){
-      this.date = date
+    setNewValue(date) {
+      this.date = date;
     },
 
     changeValue() {

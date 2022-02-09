@@ -6,6 +6,92 @@
       @click:outside="closeAndClear"
     >
       <v-card class="pa-4">
+        <v-card-title>Изменение услуги</v-card-title>
+        <v-form v-model="isValid" @submit.prevent="addRecord">
+          <v-autocomplete
+            background-color="white"
+            v-model="service_selected"
+            :items="services"
+            item-text="name"
+            item-value="id"
+            dense
+            outlined
+            label="Услуга"
+            clearable
+            no-data-text="Нет доступных данных"
+          />
+
+          <v-autocomplete
+            background-color="white"
+            v-model="client_selected"
+            :items="clients"
+            item-text="name"
+            item-value="id"
+            dense
+            outlined
+            label="Клиент"
+            clearable
+            no-data-text="Нет доступных данных"
+          />
+
+          <v-text-field
+            outlined
+            dense
+            v-model="duration"
+            type="time"
+            label="Длительность"
+            :rules="[(v) => !!v || 'Обязательное поле']"
+          ></v-text-field>
+
+          <v-text-field
+            type="number"
+            v-model="cost"
+            outlined
+            dense
+            label="Цена"
+          ></v-text-field>
+
+          <DatePicker
+            class="mb-4"
+            color="white"
+            hide-details
+            v-model="date"
+            dense
+            label="Дата записи"
+            outlined
+            background-color="white"
+            ref="date_picker"
+          />
+
+          <v-time-picker
+            v-model="time"
+            class="mt-4"
+            format="24hr"
+            color="#a60dbf"
+          ></v-time-picker>
+
+          <v-btn
+            outlined
+            color="info"
+            :disabled="!isValid"
+            type="submit"
+            class="mr-4"
+            >Изменить заявку</v-btn
+          >
+
+          <v-btn outlined color="error" @click="refuseRecord"
+            >Отменить запись</v-btn
+          >
+        </v-form>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog
+      width="500px"
+      v-model="addRecordDialog"
+      @click:outside="closeAndClear"
+    >
+      <v-card class="pa-4">
         <v-card-title> Добавление услугу </v-card-title>
         <v-form v-model="isValid" @submit.prevent="addRecord">
           <v-autocomplete
@@ -84,89 +170,6 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog width="500px" v-model="addRecordDialog">
-      <v-card class="pa-4">
-        <v-card-title> Добавление услугу </v-card-title>
-        <v-form v-model="isValid" @submit.prevent="addRecord">
-          <v-autocomplete
-            background-color="white"
-            v-model="service_selected"
-            :items="services"
-            item-text="name"
-            item-value="id"
-            dense
-            outlined
-            label="Услуга"
-            clearable
-            no-data-text="Нет доступных данных"
-          />
-
-          <v-autocomplete
-            background-color="white"
-            v-model="client_selected"
-            :items="clients"
-            item-text="name"
-            item-value="id"
-            dense
-            outlined
-            label="Клиент"
-            clearable
-            no-data-text="Нет доступных данных"
-          />
-
-          <v-text-field
-            outlined
-            dense
-            v-model="duration"
-            type="time"
-            label="Длительность"
-            :rules="[(v) => !!v || 'Обязательное поле']"
-          ></v-text-field>
-
-          <v-text-field
-            type="number"
-            v-model="cost"
-            outlined
-            dense
-            label="Цена"
-          ></v-text-field>
-
-          <div>
-            <DatePicker
-              class="mb-4"
-              color="white"
-              hide-details
-              v-model="date"
-              dense
-              label="Дата записи"
-              outlined
-              background-color="white"
-            />
-          </div>
-
-          <div class="d-flex justify-center">
-            <v-time-picker
-              v-model="time"
-              class="mt-4"
-              format="24hr"
-              color="#a60dbf"
-            ></v-time-picker>
-          </div>
-
-          <v-btn
-            outlined
-            color="info"
-            :disabled="!isValid"
-            type="submit"
-            class="mr-4"
-            >Добавить</v-btn
-          >
-
-          <v-btn outlined color="error">Отмена</v-btn>
-        </v-form>
-      </v-card>
-    </v-dialog>
-
     <v-row class="fill-height" justify="end">
       <v-col>
         <v-sheet class="calendar">
@@ -221,18 +224,21 @@
                     </span>
                   </template>
 
-                  <v-card max-width="200" min-width="200" elevation="0">
-                    <v-img
-                      class="event-img"
-                      :src="event.img"
-                      height="105"
-                      width="85"
-                    ></v-img>
+                  <v-card max-width="300" min-width="200" elevation="0">
                     <v-card-title>
                       <p>{{ event.name }}</p>
                     </v-card-title>
                     <v-card-subtitle>
-                      <p>{{ event.description }}</p>
+                      <div style="display: flex">
+                        <p>{{ event.description }}</p>
+
+                        <v-img
+                          class="event-img"
+                          :src="event.img"
+                          height="105"
+                          width="85"
+                        ></v-img>
+                      </div>
                     </v-card-subtitle>
                     <v-card-text>
                       <p class="cost-title">Цена :{{ event.cost }} &#8381;</p>
@@ -265,15 +271,6 @@ export default {
 
     focus: "",
     events: [],
-    colors: [
-      "blue",
-      "indigo",
-      "deep-purple",
-      "cyan",
-      "green",
-      "orange",
-      "grey darken-1",
-    ],
 
     isValid: false,
 
@@ -286,16 +283,24 @@ export default {
     service_selected: null,
     date: null,
     time: null,
+    id: null,
   }),
 
   methods: {
+    async refuseRecord() {
+      await axiosInstance.delete(`records/${this.id}`);
+      await this.fetchEvents();
+      this.closeAndClear();
+    },
+
     closeAndClear() {
       this.cost = null;
       this.duration = null;
       this.client_selected = null;
       this.service_selected = null;
       this.time = null;
-      this.$refs.date_picker.clear()
+      this.id = null;
+      this.$refs.date_picker.clear();
       this.dialogEventInfo = false;
     },
 
@@ -306,11 +311,12 @@ export default {
       this.client_selected = event.client;
       this.service_selected = event.service;
       this.time = event.startTime;
+      this.id = event.id;
       Vue.nextTick(() => this.$refs.date_picker.setNewValue(event.startDate));
     },
 
     async addRecord() {
-      let paramas = {
+      let params = {
         service: this.service_selected,
         client: this.client_selected,
         cost: this.cost,
@@ -318,12 +324,40 @@ export default {
         recording_time: this.dateWithTime,
       };
 
-      let data = await axiosInstance.post("records/", paramas);
-      console.log(data);
+      let { data } = await axiosInstance.post("records/", params);
+
+      let service = await axiosInstance.get(
+        `services/services/${data.service}/`
+      );
+      let end_time = this.parseDate(data.end_time);
+      let recording_time = this.parseDate(data.recording_time);
+      let startTime = this.parseTime(data.recording_time);
+      let startDate = this.parseStartDate(data.recording_time);
+      let event = {
+        id: data.id,
+        client: data.client,
+        service: data.service,
+        img: service.data.img,
+        description: service.data.description,
+        duration: data.duration,
+        cost: data.cost,
+        name: service.data.name,
+        start: recording_time,
+        end: end_time,
+        startTime: startTime,
+        startDate: startDate,
+        color: data.color ? data.color : "#e796f5",
+        timed: [],
+      };
+
+      this.events.push(event);
+      this.closeAndClear();
+      this.addRecordDialog = false;
     },
 
     openAddRecordDialog() {
       this.addRecordDialog = true;
+      Vue.nextTick(() => this.$refs.date_picker.setNewValue(this.focus));
     },
 
     prev() {
@@ -338,6 +372,17 @@ export default {
     async fetchEvents() {
       try {
         let { data } = await axiosInstance.get(`records/?date=${this.parsDay}`);
+        this.parseRecords(data.results);
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    async changeService() {
+      let date = new Date();
+      date = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
+      try {
+        let { data } = await axiosInstance.get(`records/?date=${date}`);
         this.parseRecords(data.results);
       } catch (e) {
         console.log(e);
@@ -366,13 +411,14 @@ export default {
         let startTime = this.parseTime(record.recording_time);
         let startDate = this.parseStartDate(record.recording_time);
         array.push({
+          id: record.id,
           client: record.client,
           service: record.service,
           img: data.img,
+          name: data.name,
           description: data.description,
           duration: record.duration,
           cost: record.cost,
-          name: data.name,
           start: recording_time,
           end: end_time,
           startTime: startTime,
@@ -440,25 +486,7 @@ export default {
       date = `${date[2]}.${date[1]}.${date[0]}`;
       return date;
     },
-
-    parsEvents() {
-      let eventsData = [];
-      for (let i of this.events) {
-        eventsData.push({
-          description: i.description,
-          duration: i.duration,
-          cost: i.cost,
-          id: i.id,
-          name: i.title,
-          start: i.start_planning,
-          end: i.end_planning,
-          color: "blue",
-        });
-      }
-      return eventsData;
-    },
   },
-
 
   async mounted() {
     let date = new Date();
