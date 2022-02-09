@@ -6,8 +6,8 @@
       @click:outside="closeAndClear"
     >
       <v-card class="pa-4">
-        <v-card-title>Изменение услуги</v-card-title>
-        <v-form v-model="isValid" @submit.prevent="addRecord">
+        <v-card-title>Изменение записи</v-card-title>
+        <v-form v-model="isValid" @submit.prevent="changeRecord">
           <v-autocomplete
             background-color="white"
             v-model="service_selected"
@@ -92,7 +92,7 @@
       @click:outside="closeAndClear"
     >
       <v-card class="pa-4">
-        <v-card-title> Добавление услугу </v-card-title>
+        <v-card-title> Добавление записи </v-card-title>
         <v-form v-model="isValid" @submit.prevent="addRecord">
           <v-autocomplete
             background-color="white"
@@ -219,8 +219,7 @@
                 <v-menu open-on-hover top offset-x>
                   <template v-slot:activator="{ on, attrs }">
                     <span v-bind="attrs" v-on="on" class="event-title">
-                      Услуга : {{ event.name
-                      }}<v-icon small>mdi-help-circle</v-icon>
+                      Услуга : {{ event.name }}. Клиент {{event.clientName}}<v-icon small>mdi-help-circle</v-icon>
                     </span>
                   </template>
 
@@ -235,8 +234,6 @@
                         <v-img
                           class="event-img"
                           :src="event.img"
-                          height="105"
-                          width="85"
                         ></v-img>
                       </div>
                     </v-card-subtitle>
@@ -287,6 +284,47 @@ export default {
   }),
 
   methods: {
+    async changeRecord() {
+      let params = {
+        service: this.service_selected,
+        client: this.client_selected,
+        cost: this.cost,
+        duration: this.duration,
+        recording_time: this.dateWithTime,
+      };
+      let { data } = await axiosInstance.put(`records/${this.id}/`, params);
+
+      this.events = this.events.filter((el) => el.id !== data.id);
+
+      let service = await axiosInstance.get(
+        `services/services/${data.service}/`
+      );
+      let end_time = this.parseDate(data.end_time);
+      let recording_time = this.parseDate(data.recording_time);
+      let startTime = this.parseTime(data.recording_time);
+      let startDate = this.parseStartDate(data.recording_time);
+      let clientName = this.clients.filter(el => el.id === data.client)[0].name
+      let event = {
+        id: data.id,
+        client: data.client,
+        service: data.service,
+        img: service.data.img,
+        description: service.data.description,
+        duration: data.duration,
+        cost: data.cost,
+        name: service.data.name,
+        start: recording_time,
+        end: end_time,
+        startTime: startTime,
+        startDate: startDate,
+        clientName : clientName,
+        color: data.color ? data.color : "#e796f5",
+        timed: [],
+      };
+
+      this.events.push(event);
+    },
+
     async refuseRecord() {
       await axiosInstance.delete(`records/${this.id}`);
       await this.fetchEvents();
@@ -329,10 +367,12 @@ export default {
       let service = await axiosInstance.get(
         `services/services/${data.service}/`
       );
+
       let end_time = this.parseDate(data.end_time);
       let recording_time = this.parseDate(data.recording_time);
       let startTime = this.parseTime(data.recording_time);
       let startDate = this.parseStartDate(data.recording_time);
+      let clientName = this.clients.filter(el => el.id === data.client)[0].name
       let event = {
         id: data.id,
         client: data.client,
@@ -347,6 +387,7 @@ export default {
         startTime: startTime,
         startDate: startDate,
         color: data.color ? data.color : "#e796f5",
+        clientName : clientName,
         timed: [],
       };
 
@@ -410,6 +451,8 @@ export default {
         let recording_time = this.parseDate(record.recording_time);
         let startTime = this.parseTime(record.recording_time);
         let startDate = this.parseStartDate(record.recording_time);
+        let clientName = this.clients.filter(el => el.id === record.client)[0].name
+        console.log(clientName)
         array.push({
           id: record.id,
           client: record.client,
@@ -424,6 +467,7 @@ export default {
           startTime: startTime,
           startDate: startDate,
           color: record.color ? record.color : "#e796f5",
+          clientName : clientName,
           timed: [],
         });
       }
@@ -501,6 +545,8 @@ export default {
 
     let services = await axiosInstance.get("services/services/opt");
     this.services = services.data;
+
+    this.$refs.calendar.scrollToTime("09:00");
   },
 };
 </script>
@@ -537,6 +583,8 @@ export default {
   margin-left: 20px;
   margin-top: 5px;
   border-radius: 15px;
+  max-height: 105px !important;
+  max-width: 85px !important;
 }
 
 .event-title {

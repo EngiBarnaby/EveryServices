@@ -324,7 +324,7 @@ export default {
 }
 
 .wrapper {
-  height: 100%;
+  height: 100vh;
   width: 100%;
   background-color: #a60dbf;
 }

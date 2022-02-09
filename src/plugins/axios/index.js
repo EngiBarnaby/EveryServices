@@ -1,4 +1,5 @@
 import axios from "axios";
+import router from "@/router";
 
 const axiosInstance = axios.create({
   baseURL: "http://everyservices.itpw.ru/",
@@ -19,5 +20,11 @@ axiosInstance.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+axiosInstance.interceptors.response.use(undefined, (error) => {
+  if (error.response && error.response.status === 401) {
+    router.push({ path: "login" });
+  }
+});
 
 export default axiosInstance;
