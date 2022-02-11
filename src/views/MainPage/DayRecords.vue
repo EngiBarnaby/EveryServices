@@ -63,12 +63,14 @@
             ref="date_picker"
           />
 
-          <v-time-picker
-            v-model="time"
-            class="mt-4"
-            format="24hr"
-            color="#a60dbf"
-          ></v-time-picker>
+          <div style="display: flex; justify-content: center">
+            <v-time-picker
+              v-model="time"
+              class="mt-4"
+              format="24hr"
+              color="#a60dbf"
+            ></v-time-picker>
+          </div>
 
           <v-btn
             outlined
@@ -149,12 +151,14 @@
             ref="date_picker"
           />
 
-          <v-time-picker
-            v-model="time"
-            class="mt-4"
-            format="24hr"
-            color="#a60dbf"
-          ></v-time-picker>
+          <div style="display: flex; justify-content: center">
+            <v-time-picker
+              v-model="time"
+              class="mt-4"
+              format="24hr"
+              color="#a60dbf"
+            ></v-time-picker>
+          </div>
 
           <v-btn
             outlined
@@ -219,7 +223,7 @@
                 <v-menu open-on-hover top offset-x>
                   <template v-slot:activator="{ on, attrs }">
                     <span v-bind="attrs" v-on="on" class="event-title">
-                      Услуга : {{ event.name }}. Клиент {{event.clientName}}<v-icon small>mdi-help-circle</v-icon>
+                      Услуга : {{ event.name }}. Клиент {{ event.clientName }}<v-icon small>mdi-help-circle</v-icon>
                     </span>
                   </template>
 
@@ -228,13 +232,12 @@
                       <p>{{ event.name }}</p>
                     </v-card-title>
                     <v-card-subtitle>
-                      <div style="display: flex">
+                      <div
+                        style="display: flex; justify-content: space-between"
+                      >
                         <p>{{ event.description }}</p>
 
-                        <v-img
-                          class="event-img"
-                          :src="event.img"
-                        ></v-img>
+                        <v-img class="event-img" :src="event.img"></v-img>
                       </div>
                     </v-card-subtitle>
                     <v-card-text>
@@ -303,7 +306,8 @@ export default {
       let recording_time = this.parseDate(data.recording_time);
       let startTime = this.parseTime(data.recording_time);
       let startDate = this.parseStartDate(data.recording_time);
-      let clientName = this.clients.filter(el => el.id === data.client)[0].name
+      let clientName = this.clients.filter((el) => el.id === data.client)[0]
+        .name;
       let event = {
         id: data.id,
         client: data.client,
@@ -317,7 +321,7 @@ export default {
         end: end_time,
         startTime: startTime,
         startDate: startDate,
-        clientName : clientName,
+        clientName: clientName,
         color: data.color ? data.color : "#e796f5",
         timed: [],
       };
@@ -372,7 +376,8 @@ export default {
       let recording_time = this.parseDate(data.recording_time);
       let startTime = this.parseTime(data.recording_time);
       let startDate = this.parseStartDate(data.recording_time);
-      let clientName = this.clients.filter(el => el.id === data.client)[0].name
+      let clientName = this.clients.filter((el) => el.id === data.client)[0]
+        .name;
       let event = {
         id: data.id,
         client: data.client,
@@ -387,7 +392,7 @@ export default {
         startTime: startTime,
         startDate: startDate,
         color: data.color ? data.color : "#e796f5",
-        clientName : clientName,
+        clientName: clientName,
         timed: [],
       };
 
@@ -444,32 +449,33 @@ export default {
     async parseRecords(data) {
       let array = [];
       for (let record of data) {
-        let { data } = await axiosInstance.get(
-          `services/services/${record.service}/`
-        );
-        let end_time = this.parseDate(record.end_time);
-        let recording_time = this.parseDate(record.recording_time);
-        let startTime = this.parseTime(record.recording_time);
-        let startDate = this.parseStartDate(record.recording_time);
-        let clientName = this.clients.filter(el => el.id === record.client)[0].name
-        console.log(clientName)
-        array.push({
-          id: record.id,
-          client: record.client,
-          service: record.service,
-          img: data.img,
-          name: data.name,
-          description: data.description,
-          duration: record.duration,
-          cost: record.cost,
-          start: recording_time,
-          end: end_time,
-          startTime: startTime,
-          startDate: startDate,
-          color: record.color ? record.color : "#e796f5",
-          clientName : clientName,
-          timed: [],
-        });
+        if(record.service){
+          let { data } = await axiosInstance.get(
+              `services/services/${record.service}/`
+          );
+          let end_time = this.parseDate(record.end_time);
+          let recording_time = this.parseDate(record.recording_time);
+          let startTime = this.parseTime(record.recording_time);
+          let startDate = this.parseStartDate(record.recording_time);
+          let clientName = record.client ? this.clients.filter((el) => el.id === record.client)[0].name : ": Клиент удалён"
+          array.push({
+            id: record.id,
+            client: record.client,
+            service: record.service,
+            img: data.img,
+            name: data.name,
+            description: data.description,
+            duration: record.duration,
+            cost: record.cost,
+            start: recording_time,
+            end: end_time,
+            startTime: startTime,
+            startDate: startDate,
+            color: record.color ? record.color : "#e796f5",
+            clientName: clientName,
+            timed: [],
+          });
+        }
       }
       this.events = array;
     },
@@ -538,13 +544,13 @@ export default {
       date.getMonth() + 1
     }-${date.getDate()}`;
 
-    await this.fetchData();
-
     let clients = await axiosInstance.get("clients/contacts/opt");
     this.clients = clients.data;
 
     let services = await axiosInstance.get("services/services/opt");
     this.services = services.data;
+
+    await this.fetchData();
 
     this.$refs.calendar.scrollToTime("09:00");
   },

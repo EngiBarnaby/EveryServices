@@ -1,9 +1,14 @@
 <template>
   <div>
-
     <v-dialog v-model="servicesDialog" style="background-color: white">
       <v-card>
         <Services />
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="clientsDialog" style="background-color: white">
+      <v-card>
+        <Clients />
       </v-card>
     </v-dialog>
 
@@ -39,15 +44,15 @@
       </template>
 
       <v-list dense>
-<!--        <v-list-item v-for="item in items" :key="item.title" :to="item.link">-->
-<!--          <v-list-item-icon>-->
-<!--            <v-icon class="white&#45;&#45;text">{{ item.icon }}</v-icon>-->
-<!--          </v-list-item-icon>-->
+        <!--        <v-list-item v-for="item in items" :key="item.title" :to="item.link">-->
+        <!--          <v-list-item-icon>-->
+        <!--            <v-icon class="white&#45;&#45;text">{{ item.icon }}</v-icon>-->
+        <!--          </v-list-item-icon>-->
 
-<!--          <v-list-item-content>-->
-<!--            <v-list-item-title class="white&#45;&#45;text">{{item.title }}</v-list-item-title>-->
-<!--          </v-list-item-content>-->
-<!--        </v-list-item>-->
+        <!--          <v-list-item-content>-->
+        <!--            <v-list-item-title class="white&#45;&#45;text">{{item.title }}</v-list-item-title>-->
+        <!--          </v-list-item-content>-->
+        <!--        </v-list-item>-->
 
         <v-list-item @click="servicesDialog = true">
           <v-list-item-icon>
@@ -55,7 +60,9 @@
           </v-list-item-icon>
 
           <v-list-item-content>
-            <v-list-item-title class="white--text">Мои услуги</v-list-item-title>
+            <v-list-item-title class="white--text"
+              >Мои услуги</v-list-item-title
+            >
           </v-list-item-content>
         </v-list-item>
 
@@ -65,17 +72,21 @@
           </v-list-item-icon>
 
           <v-list-item-content>
-            <v-list-item-title class="white--text">Мои записи</v-list-item-title>
+            <v-list-item-title class="white--text"
+              >Мои записи</v-list-item-title
+            >
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item>
+        <v-list-item @click="clientsDialog = true">
           <v-list-item-icon>
             <v-icon class="white--text">mdi-account-outline</v-icon>
           </v-list-item-icon>
 
           <v-list-item-content>
-            <v-list-item-title class="white--text">Мои клиенты</v-list-item-title>
+            <v-list-item-title class="white--text"
+              >Мои клиенты</v-list-item-title
+            >
           </v-list-item-content>
         </v-list-item>
 
@@ -85,10 +96,11 @@
           </v-list-item-icon>
 
           <v-list-item-content>
-            <v-list-item-title class="white--text">Мои доходы</v-list-item-title>
+            <v-list-item-title class="white--text"
+              >Мои доходы</v-list-item-title
+            >
           </v-list-item-content>
         </v-list-item>
-
       </v-list>
     </v-navigation-drawer>
   </div>
@@ -98,16 +110,19 @@
 import { mapGetters } from "vuex";
 import axiosInstance from "../plugins/axios";
 import Services from "../views/Services/Services";
+import Clients from "@/views/Clients/Clients";
 export default {
   name: "Sidebar",
 
-  components : {
-    Services
+  components: {
+    Services,
+    Clients,
   },
 
   data() {
     return {
-      servicesDialog : false,
+      servicesDialog: false,
+      clientsDialog : false,
 
       imageUrl: "",
       items: [
@@ -117,7 +132,7 @@ export default {
           link: "/service",
         },
         { title: "Мои записи", icon: "mdi-calendar-month-outline", link: "/" },
-        { title: "Мои клиенты", icon: "mdi-account-outline"},
+        { title: "Мои клиенты", icon: "mdi-account-outline" },
         { title: "Мои доходы", icon: "mdi-wallet-outline" },
       ],
     };
@@ -138,4 +153,9 @@ export default {
 .sidebar {
   z-index: 100;
 }
+
+.clients-window {
+  background-color: white;
+}
+
 </style>

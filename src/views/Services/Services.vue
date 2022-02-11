@@ -293,8 +293,8 @@ export default {
             "Content-Type": "multipart/form-data",
           },
         });
-        this.clearAndClose()
-        this.fetchServices()
+        this.clearAndClose();
+        this.fetchServices();
       } catch (e) {
         console.log(e);
       }
@@ -331,7 +331,7 @@ export default {
 
 .empty-card {
   height: 450px;
-  width: 400px;
+  /*width: 400px;*/
   border: 1px solid #7b7b7b;
   border-radius: 25px;
   display: flex;

@@ -15,9 +15,9 @@ const routes = [
     component: () => import("../views/Login/Login"),
   },
   {
-    path : "/password-recovery",
-    name : "password-recovery",
-    component : () => import("../views/Login/RecoveryPassword")
+    path: "/password-recovery",
+    name: "password-recovery",
+    component: () => import("../views/Login/RecoveryPassword"),
   },
   {
     path: "/service",
@@ -36,6 +36,5 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes,
 });
-
 
 export default router;

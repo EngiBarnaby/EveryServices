@@ -269,7 +269,7 @@ export default {
             password: this.loginPassword,
           }
         );
-        localStorage.setItem("token", "Bearer " + data.token);
+        localStorage.setItem("token", data.token);
         this.$store.commit("user/SET_USER_INFO", data);
         this.$router.push("/");
       } catch (e) {
@@ -324,7 +324,7 @@ export default {
 }
 
 .wrapper {
-  height: 100vh;
+  min-height: 100vh;
   width: 100%;
   background-color: #a60dbf;
 }
