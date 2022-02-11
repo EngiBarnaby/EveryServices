@@ -1,3 +1,5 @@
+import axiosInstance from "../../plugins/axios";
+
 const user = {
   namespaced: true,
 
@@ -11,10 +13,17 @@ const user = {
     },
   },
 
-  actions: {},
+  actions: {
+    async fetchUserData(context) {
+      let { data } = await axiosInstance.get("accounts/profile/info/");
+      console.log(data);
+      context.commit("SET_USER_INFO", data);
+    },
+  },
 
   getters: {
-    getUserInfo: state => state.userInfo,
+    getImgUrl: (state) => state.userInfo.avatar,
+    getUserInfo: (state) => state.userInfo,
   },
 };
 

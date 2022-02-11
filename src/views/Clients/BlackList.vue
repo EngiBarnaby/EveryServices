@@ -10,7 +10,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <div>
+    <div v-if="!isFetching" >
       <v-container>
         <v-row justify="center">
           <v-text-field
@@ -46,8 +46,8 @@
               <div class="blacklist" v-if="client.blacklist">
                 <v-menu open-on-hover top offset-x>
                   <template v-slot:activator="{ on, attrs }">
-                    <span v-bind="attrs" v-on="on"
-                      >В чёрном списке<v-icon style="margin-bottom: 3px" small
+                    <span v-bind="attrs" v-on="on" class="black-list-title"
+                      >В чёрном списке<v-icon class="black-list-title-icon" style="margin-bottom: 3px" small
                         >mdi-help-circle</v-icon
                       ></span
                     >
@@ -99,6 +99,8 @@ export default {
 
   data() {
     return {
+      isFetching : true,
+
       search: "",
       deleteClientDialog : false,
 
@@ -150,11 +152,23 @@ export default {
   async mounted() {
     let { data } = await axiosInstance.get("clients/contacts/?blacklist=1");
     this.blacklist = data.results;
+    this.isFetching = false
   },
 };
 </script>
 
 <style scoped>
+
+.black-list-title-icon {
+  color: white;
+  margin-top: 2px;
+  margin-left: 5px;
+}
+
+.black-list-title {
+  color: white;
+}
+
 .searchInput {
   max-width: 300px !important;
 }

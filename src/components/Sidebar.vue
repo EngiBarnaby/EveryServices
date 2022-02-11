@@ -1,15 +1,19 @@
 <template>
   <div>
-    <v-dialog v-model="servicesDialog" style="background-color: white">
+    <v-dialog v-model="servicesDialog" width="1250">
       <v-card>
         <Services />
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="clientsDialog" style="background-color: white">
+    <v-dialog v-model="clientsDialog" width="1250">
       <v-card>
         <Clients />
       </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="profileDialog"  width="1250" height="500px">
+        <Profile />
     </v-dialog>
 
     <v-navigation-drawer
@@ -28,15 +32,15 @@
           class="d-flex align-center justify-center mt-2"
         >
           <v-list-item-avatar>
-            <img :src="imageUrl" />
+            <img :src="getImgUrl" />
           </v-list-item-avatar>
 
           <v-list-item-content>
             <v-list-item-title class="white--text"
-              >{{ getUserInfo.user.first_name }}
-              {{ getUserInfo.user.last_name }}</v-list-item-title
+              >{{ getUserInfo.first_name }}
+              {{ getUserInfo.last_name }}</v-list-item-title
             >
-            <v-list-item-subtitle class="white--text"
+            <v-list-item-subtitle @click="profileDialog = true" class="white--text profile-text"
               >Перейти к профилю</v-list-item-subtitle
             >
           </v-list-item-content>
@@ -108,21 +112,23 @@
 
 <script>
 import { mapGetters } from "vuex";
-import axiosInstance from "../plugins/axios";
 import Services from "../views/Services/Services";
 import Clients from "@/views/Clients/Clients";
+import Profile from "../views/Profile/Profile";
 export default {
   name: "Sidebar",
 
   components: {
     Services,
     Clients,
+    Profile,
   },
 
   data() {
     return {
       servicesDialog: false,
       clientsDialog: false,
+      profileDialog : false,
 
       imageUrl: "",
       items: [
@@ -139,19 +145,19 @@ export default {
   },
 
   computed: {
-    ...mapGetters("user", ["getUserInfo"]),
+    ...mapGetters("user", ["getUserInfo", "getImgUrl"]),
   },
 
-  mounted() {
-    this.imageUrl =
-      axiosInstance.defaults.baseURL + this.getUserInfo.user.avatar;
-  },
 };
 </script>
 
 <style scoped>
 .sidebar {
   z-index: 100;
+}
+
+.profile-text:hover {
+  cursor : pointer;
 }
 
 .clients-window {

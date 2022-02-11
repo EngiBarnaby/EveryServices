@@ -52,7 +52,7 @@
               label="Фото"
               outlined
               ref="file"
-              accept="image/jpeg, image/gif, image/png"
+              accept="image/jpeg, image/png"
               v-on:change="handleFileUpload()"
               dense
               type="file"

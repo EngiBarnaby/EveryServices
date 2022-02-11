@@ -124,7 +124,7 @@
               :disabled="!isValid"
               type="submit"
               class="mr-4"
-              >Добавить
+              >Забанить
             </v-btn>
             <v-btn outlined @click="clearAndClose" color="error">Отмена</v-btn>
           </v-form>
@@ -266,7 +266,7 @@ export default {
       let { data } = await axiosInstance.get(
         `clients/contacts/?search=${this.search}`
       );
-      this.clients = data.results
+      this.clients = data.results;
     },
 
     async unBan(client) {
@@ -331,7 +331,9 @@ export default {
 
     async fetchClients() {
       try {
-        let { data } = await axiosInstance.get("clients/contacts/");
+        let { data } = await axiosInstance.get(
+          `clients/contacts/?blacklist=0&search=${this.search}`
+        );
         this.clients = data.results;
       } catch (e) {
         console.log(e);
@@ -354,8 +356,6 @@ export default {
 </script>
 
 <style scoped>
-
-
 .searchInput {
   max-width: 300px !important;
 }

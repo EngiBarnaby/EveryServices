@@ -1,8 +1,5 @@
 <template>
   <div>
-    <!--      <v-row justify="center" class="mt-4">-->
-    <!--        <h1>Ваши клиенты</h1>-->
-    <!--      </v-row>-->
 
     <v-tabs v-model="tab" centered align-with-title>
       <v-tabs-slider color="blue"></v-tabs-slider>
@@ -18,12 +15,12 @@
       </div>
 
       <v-tabs-items v-model="tab">
-          <v-tab-item>
-            <ClientsList ref="clientList" />
-          </v-tab-item>
-          <v-tab-item  >
-            <BlackList ref="blackList"/>
-          </v-tab-item>
+        <v-tab-item>
+          <ClientsList ref="clientList" />
+        </v-tab-item>
+        <v-tab-item>
+          <BlackList ref="blackList" />
+        </v-tab-item>
       </v-tabs-items>
     </v-tabs>
   </div>
@@ -40,15 +37,14 @@ export default {
     ClientsList,
   },
 
-  watch : {
-    tab(){
-      if(this.tab === 0){
-        this.$refs.clientList.fetchClients()
+  watch: {
+    tab() {
+      if (this.tab === 0) {
+        this.$refs.clientList.fetchClients();
+      } else if (this.tab === 1) {
+        this.$refs.blackList.fetchBlackList();
       }
-      else if(this.tab === 1) {
-        this.$refs.blackList.fetchBlackList()
-      }
-    }
+    },
   },
 
   data() {

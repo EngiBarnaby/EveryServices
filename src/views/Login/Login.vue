@@ -156,7 +156,7 @@
         <div class="title">ES</div>
       </v-row>
 
-      <div class="enter q-mb-xl" @click="loginDialog = true">
+      <div class="enter" @click="loginDialog = true">
         <div class="login__input authentication">
           <h3>Войти</h3>
         </div>
@@ -269,8 +269,9 @@ export default {
             password: this.loginPassword,
           }
         );
+        console.log(data)
         localStorage.setItem("token", data.token);
-        this.$store.commit("user/SET_USER_INFO", data);
+        this.$store.commit("user/SET_USER_INFO", data.user);
         this.$router.push("/");
       } catch (e) {
         console.log(e);
