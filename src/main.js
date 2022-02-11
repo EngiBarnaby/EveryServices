@@ -3,6 +3,9 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import vuetify from "./plugins/vuetify";
+import vueDebounce from 'vue-debounce'
+
+Vue.use(vueDebounce)
 
 import { VueMaskDirective } from 'v-mask'
 Vue.directive('mask', VueMaskDirective);

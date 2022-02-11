@@ -223,7 +223,8 @@
                 <v-menu open-on-hover top offset-x>
                   <template v-slot:activator="{ on, attrs }">
                     <span v-bind="attrs" v-on="on" class="event-title">
-                      Услуга : {{ event.name }}. Клиент {{ event.clientName }}<v-icon small>mdi-help-circle</v-icon>
+                      Услуга : {{ event.name }}. Клиент {{ event.clientName
+                      }}<v-icon small>mdi-help-circle</v-icon>
                     </span>
                   </template>
 
@@ -449,15 +450,17 @@ export default {
     async parseRecords(data) {
       let array = [];
       for (let record of data) {
-        if(record.service){
+        if (record.service) {
           let { data } = await axiosInstance.get(
-              `services/services/${record.service}/`
+            `services/services/${record.service}/`
           );
           let end_time = this.parseDate(record.end_time);
           let recording_time = this.parseDate(record.recording_time);
           let startTime = this.parseTime(record.recording_time);
           let startDate = this.parseStartDate(record.recording_time);
-          let clientName = record.client ? this.clients.filter((el) => el.id === record.client)[0].name : ": Клиент удалён"
+          let clientName = record.client
+            ? this.clients.filter((el) => el.id === record.client)[0].name
+            : ": Клиент удалён";
           array.push({
             id: record.id,
             client: record.client,

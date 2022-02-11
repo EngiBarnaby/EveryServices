@@ -73,7 +73,7 @@
 
           <v-list-item-content>
             <v-list-item-title class="white--text"
-              >Мои записи</v-list-item-title
+              >Моё расписание</v-list-item-title
             >
           </v-list-item-content>
         </v-list-item>
@@ -122,7 +122,7 @@ export default {
   data() {
     return {
       servicesDialog: false,
-      clientsDialog : false,
+      clientsDialog: false,
 
       imageUrl: "",
       items: [
@@ -157,5 +157,4 @@ export default {
 .clients-window {
   background-color: white;
 }
-
 </style>
