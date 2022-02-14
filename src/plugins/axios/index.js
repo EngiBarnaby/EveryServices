@@ -30,6 +30,7 @@ axiosInstance.interceptors.response.use(undefined, (error) => {
     localStorage.removeItem("token");
     router.push({ path: "login" });
   }
+  return error
 });
 
 export default axiosInstance;

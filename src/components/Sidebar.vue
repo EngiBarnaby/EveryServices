@@ -48,15 +48,6 @@
       </template>
 
       <v-list dense>
-        <!--        <v-list-item v-for="item in items" :key="item.title" :to="item.link">-->
-        <!--          <v-list-item-icon>-->
-        <!--            <v-icon class="white&#45;&#45;text">{{ item.icon }}</v-icon>-->
-        <!--          </v-list-item-icon>-->
-
-        <!--          <v-list-item-content>-->
-        <!--            <v-list-item-title class="white&#45;&#45;text">{{item.title }}</v-list-item-title>-->
-        <!--          </v-list-item-content>-->
-        <!--        </v-list-item>-->
 
         <v-list-item @click="servicesDialog = true">
           <v-list-item-icon>
@@ -131,16 +122,6 @@ export default {
       profileDialog : false,
 
       imageUrl: "",
-      items: [
-        {
-          title: "Мои услуги",
-          icon: "mdi-clipboard-text-outline",
-          link: "/service",
-        },
-        { title: "Мои записи", icon: "mdi-calendar-month-outline", link: "/" },
-        { title: "Мои клиенты", icon: "mdi-account-outline" },
-        { title: "Мои доходы", icon: "mdi-wallet-outline" },
-      ],
     };
   },
 

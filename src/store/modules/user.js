@@ -1,4 +1,5 @@
 import axiosInstance from "../../plugins/axios";
+import router from "../../router";
 
 const user = {
   namespaced: true,
@@ -11,6 +12,13 @@ const user = {
     SET_USER_INFO(state, data) {
       state.userInfo = data;
     },
+
+    LOGOUT(state){
+      state.userInfo = {}
+      localStorage.removeItem("token")
+      router.push("/login")
+    },
+
   },
 
   actions: {

@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <Sidebar />
+    <Sidebar  v-if="!isLogin"/>
     <v-main>
       <router-view />
     </v-main>
@@ -13,6 +13,17 @@ export default {
   name: "App",
   components: {
     Sidebar,
+  },
+
+  computed : {
+    isLogin(){
+      if(this.$route.name === "login"){
+        return true
+      }
+      else {
+        return false
+      }
+    }
   },
 
   data: () => ({

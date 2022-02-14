@@ -63,14 +63,14 @@
             ref="date_picker"
           />
 
-          <div style="display: flex; justify-content: center">
-            <v-time-picker
-              v-model="time"
-              class="mt-4"
-              format="24hr"
-              color="#a60dbf"
-            ></v-time-picker>
-          </div>
+          <v-text-field
+            outlined
+            dense
+            v-model="time"
+            type="time"
+            label="Время"
+            :rules="[(v) => !!v || 'Обязательное поле']"
+          ></v-text-field>
 
           <v-btn
             outlined
@@ -151,14 +151,14 @@
             ref="date_picker"
           />
 
-          <div style="display: flex; justify-content: center">
-            <v-time-picker
-              v-model="time"
-              class="mt-4"
-              format="24hr"
-              color="#a60dbf"
-            ></v-time-picker>
-          </div>
+          <v-text-field
+            outlined
+            dense
+            v-model="time"
+            type="time"
+            label="Время"
+            :rules="[(v) => !!v || 'Обязательное поле']"
+          ></v-text-field>
 
           <v-btn
             outlined
@@ -343,7 +343,6 @@ export default {
       this.service_selected = null;
       this.time = null;
       this.id = null;
-      this.$refs.date_picker.clear();
       this.dialogEventInfo = false;
     },
 
