@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="!isFetching">
     <v-dialog v-model="servicesDialog" width="1250">
       <v-card>
         <Services />
@@ -14,6 +14,10 @@
 
     <v-dialog v-model="profileDialog"  width="1250" height="500px">
         <Profile />
+    </v-dialog>
+
+    <v-dialog v-model="statisticsDialog"  width="1000" height="500px">
+      <Statistics />
     </v-dialog>
 
     <v-navigation-drawer
@@ -85,7 +89,7 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item>
+        <v-list-item @click="statisticsDialog = true">
           <v-list-item-icon>
             <v-icon class="white--text">mdi-wallet-outline</v-icon>
           </v-list-item-icon>
@@ -106,6 +110,7 @@ import { mapGetters } from "vuex";
 import Services from "../views/Services/Services";
 import Clients from "@/views/Clients/Clients";
 import Profile from "../views/Profile/Profile";
+import Statistics from "../views/Statistics/Statistics";
 export default {
   name: "Sidebar",
 
@@ -113,13 +118,17 @@ export default {
     Services,
     Clients,
     Profile,
+    Statistics,
   },
 
   data() {
     return {
+      isFetching : true,
+
       servicesDialog: false,
       clientsDialog: false,
       profileDialog : false,
+      statisticsDialog : false,
 
       imageUrl: "",
     };
@@ -128,6 +137,10 @@ export default {
   computed: {
     ...mapGetters("user", ["getUserInfo", "getImgUrl"]),
   },
+
+  async mounted() {
+    this.isFetching = false
+  }
 
 };
 </script>
