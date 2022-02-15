@@ -224,11 +224,18 @@
                   <template v-slot:activator="{ on, attrs }">
                     <span v-bind="attrs" v-on="on" class="event-title">
                       Услуга : {{ event.name }}. Клиент {{ event.clientName
-                      }}<v-icon small>mdi-help-circle</v-icon>
+                      }}<v-icon v-if="event.name != 'Удалена'" small
+                        >mdi-help-circle</v-icon
+                      >
                     </span>
                   </template>
 
-                  <v-card max-width="300" min-width="200" elevation="0">
+                  <v-card
+                    v-if="event.name != 'Удалена'"
+                    max-width="300"
+                    min-width="200"
+                    elevation="0"
+                  >
                     <v-card-title>
                       <p>{{ event.name }}</p>
                     </v-card-title>
@@ -256,6 +263,10 @@
         </v-sheet>
       </v-col>
     </v-row>
+
+    <v-snackbar v-model="snackbarError" timeout="4000" color="error" outlined>
+      {{ snackbarTextError }}
+    </v-snackbar>
   </div>
 </template>
 
@@ -269,6 +280,9 @@ export default {
   data: () => ({
     addRecordDialog: false,
     dialogEventInfo: false,
+
+    snackbarError: false,
+    snackbarTextError: null,
 
     focus: "",
     events: [],
@@ -289,6 +303,7 @@ export default {
 
   methods: {
     async changeRecord() {
+      let data = null;
       let params = {
         service: this.service_selected,
         client: this.client_selected,
@@ -296,7 +311,21 @@ export default {
         duration: this.duration,
         recording_time: this.dateWithTime,
       };
-      let { data } = await axiosInstance.put(`records/${this.id}/`, params);
+      await axiosInstance
+        .put(`records/${this.id}/`, params)
+        .then((res) => {
+          if (res.status === 200) {
+            data = res.data;
+          }
+
+          if (res.response.status === 400) {
+            this.snackbarTextError = res.response.data.detail;
+            this.snackbarError = true;
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
 
       this.events = this.events.filter((el) => el.id !== data.id);
 
@@ -328,6 +357,7 @@ export default {
       };
 
       this.events.push(event);
+      this.closeAndClear()
     },
 
     async refuseRecord() {
@@ -358,6 +388,7 @@ export default {
     },
 
     async addRecord() {
+      let data = null;
       let params = {
         service: this.service_selected,
         client: this.client_selected,
@@ -366,7 +397,21 @@ export default {
         recording_time: this.dateWithTime,
       };
 
-      let { data } = await axiosInstance.post("records/", params);
+      await axiosInstance
+        .post("records/", params)
+        .then((res) => {
+          if (res.status === 201) {
+            data = res.data;
+          }
+
+          if (res.response.status === 400) {
+            this.snackbarTextError = res.response.data.detail;
+            this.snackbarError = true;
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
 
       let service = await axiosInstance.get(
         `services/services/${data.service}/`
@@ -395,8 +440,8 @@ export default {
         clientName: clientName,
         timed: [],
       };
-
       this.events.push(event);
+
       this.closeAndClear();
       this.addRecordDialog = false;
     },
@@ -459,13 +504,37 @@ export default {
           let startDate = this.parseStartDate(record.recording_time);
           let clientName = record.client
             ? this.clients.filter((el) => el.id === record.client)[0].name
-            : ": Клиент удалён";
+            : ": Удалён";
           array.push({
             id: record.id,
             client: record.client,
             service: record.service,
             img: data.img,
             name: data.name,
+            description: data.description,
+            duration: record.duration,
+            cost: record.cost,
+            start: recording_time,
+            end: end_time,
+            startTime: startTime,
+            startDate: startDate,
+            color: record.color ? record.color : "#e796f5",
+            clientName: clientName,
+            timed: [],
+          });
+        } else {
+          let end_time = this.parseDate(record.end_time);
+          let recording_time = this.parseDate(record.recording_time);
+          let startTime = this.parseTime(record.recording_time);
+          let startDate = this.parseStartDate(record.recording_time);
+          let clientName = record.client
+            ? this.clients.filter((el) => el.id === record.client)[0].name
+            : ": Клиент удалён";
+          array.push({
+            id: record.id,
+            client: record.client,
+            service: record.service,
+            name: "Удалена",
             description: data.description,
             duration: record.duration,
             cost: record.cost,

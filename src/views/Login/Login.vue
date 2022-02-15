@@ -22,15 +22,15 @@
                 <v-form @submit.prevent="onLogin">
                   <v-text-field
                     v-model="loginPhoneNumber"
-                    outlined
+                    class="mb-3"
                     dense
-                    label="Ваш номер *"
+                    label="Ваш номер или email *"
                     :rules="[(v) => !!v || 'Обязательное поле']"
                     required
                   >
                   </v-text-field>
                   <v-text-field
-                    outlined
+                    class="mb-3"
                     dense
                     label="Ваш пароль *"
                     :append-icon="
@@ -45,6 +45,8 @@
                     :rules="[(v) => !!v || 'Обязательное поле']"
                     required
                   ></v-text-field>
+
+                  <p class="red--text">{{ loginTextError }}</p>
 
                   <div style="display: flex; justify-content: space-between">
                     <v-btn color="info" type="submit" outlined>Войти</v-btn>
@@ -61,7 +63,7 @@
                 <v-form @submit.prevent="onRegistration">
                   <v-text-field
                     v-model="firstName"
-                    outlined
+                    class="mb-3"
                     dense
                     label="Имя *"
                     type="text"
@@ -70,7 +72,7 @@
                   >
                   </v-text-field>
                   <v-text-field
-                    outlined
+                    class="mb-3"
                     dense
                     label="Фамилия *"
                     type="text"
@@ -81,7 +83,7 @@
 
                   <v-text-field
                     v-model="email"
-                    outlined
+                    class="mb-3"
                     dense
                     label="Email(необязательно)"
                     type="email"
@@ -89,7 +91,7 @@
                   >
                   </v-text-field>
                   <v-text-field
-                    outlined
+                    class="mb-3"
                     dense
                     label="Ваш номер *"
                     v-mask="'+7 ### ### ## ##'"
@@ -100,7 +102,7 @@
 
                   <v-text-field
                     v-model="registrationPassword"
-                    outlined
+                    class="mb-3"
                     dense
                     type="password"
                     label="Ваш пароль *"
@@ -109,7 +111,7 @@
                   >
                   </v-text-field>
                   <v-text-field
-                    outlined
+                    class="mb-3"
                     dense
                     label="Подтверждение пароля *"
                     type="password"
@@ -195,6 +197,10 @@
     >
       Пароли не совпадают
     </v-snackbar>
+
+    <v-snackbar v-model="snackbarError" timeout="4000" color="error" outlined>
+      {{ snackbarTextError }}
+    </v-snackbar>
   </div>
 </template>
 
@@ -208,6 +214,11 @@ export default {
   },
   data() {
     return {
+      snackbarError: false,
+      snackbarTextError: null,
+
+      loginTextError: null,
+
       isInvisibleLoginPassword: true,
 
       tab: null,
@@ -261,39 +272,49 @@ export default {
     },
 
     async onLogin() {
-      try {
-        let { data } = await axiosInstance.post(
-          "accounts/authentication/auth/",
-          {
-            login: this.loginPhoneNumber.toString(),
-            password: this.loginPassword,
+      await axiosInstance
+        .post("accounts/authentication/auth/", {
+          login: this.loginPhoneNumber.toString(),
+          password: this.loginPassword,
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            localStorage.setItem("token", res.data.token);
+            this.$store.commit("user/SET_USER_INFO", res.data.user);
+            this.$router.push("/");
           }
-        );
-        console.log(data)
-        localStorage.setItem("token", data.token);
-        this.$store.commit("user/SET_USER_INFO", data.user);
-        this.$router.push("/");
-      } catch (e) {
-        console.log(e);
-      }
+
+          if (res.response.status === 400) {
+            this.loginTextError = res.response.data.detail;
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
 
     async onRegistration() {
       if (this.registrationPassword !== this.registrationPassword2) {
         this.passwordNotMatch = true;
       } else {
-        try {
-          await axiosInstance.post("accounts/authentication/reg/", {
+        await axiosInstance
+          .post("accounts/authentication/reg/", {
             first_name: this.firstName,
             last_name: this.last_name,
             password: this.registrationPassword,
             email: this.email,
             phone: this.parseRegistrationPhone,
+          })
+          .then((res) => {
+            if (res.status === 200) {
+              this.showPin = true;
+            }
+
+            if (res.response.status === 400) {
+              this.snackbarTextError = res.response.data.detail;
+              this.snackbarError = true;
+            }
           });
-          this.showPin = true;
-        } catch (e) {
-          console.log(e);
-        }
       }
     },
 

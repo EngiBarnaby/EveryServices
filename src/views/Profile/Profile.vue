@@ -102,15 +102,14 @@
 
     <v-dialog width="400" v-model="changeEmailDialog">
       <v-card class="pa-4">
-        <v-form @submit.prevent="changeEmail">
+        <v-form @submit.prevent="sendNewEmail">
           <v-card-title> Изменить email</v-card-title>
-          <v-text-field v-model="newEmail" label="Новый email">
-          </v-text-field>
+          <v-text-field v-model="newEmail" label="Новый email"> </v-text-field>
 
           <v-card-actions class="d-flex justify-center">
-            <div class="changePhoneBtn">
-              <v-btn outlined color="info" @click="send"
-                >Отправить письмо на email
+            <div>
+              <v-btn outlined color="info" type="submit"
+                >Подтвердить email
               </v-btn>
             </div>
           </v-card-actions>
@@ -157,6 +156,8 @@
             class="mt-10"
             dark
             hide-details
+            v-model="auto_confirm"
+            @change="changeAutoConfirmStatus"
             label="Автоматическое подтверждение сеанса"
           ></v-switch>
           <v-switch dark label="Включить уведомления"></v-switch>
@@ -231,6 +232,7 @@ export default {
       first_name: null,
       phone: null,
       email: null,
+      auto_confirm: false,
 
       oldPassword: null,
       newPassword1: null,
@@ -253,9 +255,31 @@ export default {
     ...mapActions("user", ["fetchUserData"]),
     ...mapMutations("user", ["LOGOUT"]),
 
+    async changeAutoConfirmStatus() {
+      await axiosInstance.post("accounts/profile/change_auto_confirm/", {
+        auto_confirm: this.auto_confirm,
+      });
+    },
 
-    sendNewEmail(){
+    async sendNewEmail() {
+      await axiosInstance
+        .post("accounts/profile/change_email/", {
+          email: this.newEmail,
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            this.approveChangePhonePin = true;
+            this.snackbarText = res.data.detail;
+            this.snackbar = true;
+            this.newEmail = null;
+            this.changeEmailDialog = false;
+          }
 
+          if (res.response.status === 400) {
+            this.snackbarTextError = res.response.data.detail;
+            this.snackbarError = true;
+          }
+        });
     },
 
     closeChangePasswordDialog() {
@@ -388,16 +412,6 @@ export default {
       }
     },
 
-    async changeEmail() {
-      await axiosInstance.post("accounts/profile/change_email/", {
-        email: this.email,
-      });
-      await this.fetchUserData();
-      this.setNewData();
-      this.snackbarText = "Email успешно изменён";
-      this.snackbar = true;
-    },
-
     async changeName() {
       await axiosInstance.post("accounts/profile/change_name/", {
         first_name: this.first_name,
@@ -430,6 +444,7 @@ export default {
     this.last_name = data.last_name;
     this.phone = data.phone;
     this.email = data.email;
+    this.auto_confirm = data.auto_confirm;
   },
 };
 </script>
