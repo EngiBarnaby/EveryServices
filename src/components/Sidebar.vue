@@ -6,6 +6,12 @@
       </v-card>
     </v-dialog>
 
+    <v-dialog v-model="scheduleDialog" width="1250">
+      <v-card>
+        <Schedule />
+      </v-card>
+    </v-dialog>
+
     <v-dialog v-model="clientsDialog" width="1250">
       <v-card>
         <Clients />
@@ -49,6 +55,7 @@
 
       <v-list dense>
 
+
         <v-list-item @click="servicesDialog = true">
           <v-list-item-icon>
             <v-icon class="white--text">mdi-clipboard-text-outline</v-icon>
@@ -67,7 +74,7 @@
           </v-list-item-icon>
 
           <v-list-item-content>
-            <v-list-item-title class="white--text"
+            <v-list-item-title @click="scheduleDialog = true" class="white--text"
               >Моё расписание</v-list-item-title
             >
           </v-list-item-content>
@@ -106,6 +113,7 @@ import { mapGetters } from "vuex";
 import Services from "../views/Services/Services";
 import Clients from "@/views/Clients/Clients";
 import Profile from "../views/Profile/Profile";
+import Schedule from "../views/Schedule/Schedule";
 export default {
   name: "Sidebar",
 
@@ -113,15 +121,27 @@ export default {
     Services,
     Clients,
     Profile,
+    Schedule
   },
 
   data() {
     return {
+      scheduleDialog:false,
       servicesDialog: false,
       clientsDialog: false,
       profileDialog : false,
 
       imageUrl: "",
+      items: [
+        {
+          title: "Мои услуги",
+          icon: "mdi-clipboard-text-outline",
+          link: "/service",
+        },
+        { title: "Мои записи", icon: "mdi-calendar-month-outline", link: "/" },
+        { title: "Мои клиенты", icon: "mdi-account-outline" },
+        { title: "Мои доходы", icon: "mdi-wallet-outline" },
+      ],
     };
   },
 
