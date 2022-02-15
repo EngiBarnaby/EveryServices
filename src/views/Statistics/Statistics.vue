@@ -97,13 +97,15 @@ export default {
   width: 260px;
   height: 140px;
   border-radius: 20px;
+  margin-right: 25px;
+  margin-left: 25px;
 }
 
 .card-wrapper {
   margin-top: 40px;
   padding-bottom: 40px;
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
 }
 
 .wrapper {

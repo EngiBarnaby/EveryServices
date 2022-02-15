@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!isFetching">
+  <div>
     <v-dialog v-model="servicesDialog" width="1250">
       <v-card>
         <Services />
@@ -53,6 +53,18 @@
 
       <v-list dense>
 
+        <v-list-item to="/">
+          <v-list-item-icon>
+            <v-icon class="white--text">mdi-calendar</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title class="white--text"
+            >Мои записи</v-list-item-title
+            >
+          </v-list-item-content>
+        </v-list-item>
+
         <v-list-item @click="servicesDialog = true">
           <v-list-item-icon>
             <v-icon class="white--text">mdi-clipboard-text-outline</v-icon>
@@ -89,7 +101,7 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item @click="statisticsDialog = true">
+        <v-list-item to="/statistics">
           <v-list-item-icon>
             <v-icon class="white--text">mdi-wallet-outline</v-icon>
           </v-list-item-icon>
@@ -123,8 +135,6 @@ export default {
 
   data() {
     return {
-      isFetching : true,
-
       servicesDialog: false,
       clientsDialog: false,
       profileDialog : false,
@@ -137,10 +147,6 @@ export default {
   computed: {
     ...mapGetters("user", ["getUserInfo", "getImgUrl"]),
   },
-
-  async mounted() {
-    this.isFetching = false
-  }
 
 };
 </script>
