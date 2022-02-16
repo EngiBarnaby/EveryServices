@@ -1,64 +1,86 @@
-<script>
-import { Line } from "vue-chartjs";
+<template>
+  <div>
+    <LineChart ref="chart" />
+  </div>
+</template>
 
+<script>
+import LineChart from "./LineChart";
+import Vue from "vue";
+import axiosInstance from "../../plugins/axios"; // vue-chartjs
 export default {
-  extends: Line,
+  name: "LineSample",
   data() {
     return {
-      gradient: null,
-      gradient2: null,
+      dataset: {
+        labels: [
+          "янв",
+          "фев",
+          "март",
+          "апр",
+          "май",
+          "июнь",
+          "июль",
+          "авг",
+          "сент",
+          "окт",
+          "ноя",
+          "дек",
+        ],
+        datasets: [
+          {
+            label: "Доход",
+            backgroundColor: "#bb02d9",
+            data: [40, 39, 10, 40, 39, 80, 44, 10, 40, 39, 80, 44],
+          },
+        ],
+      },
+
+      options: {},
     };
   },
- async mounted() {
-    this.gradient = this.$refs.canvas
-        .getContext("2d")
-        .createLinearGradient(0, 0, 0, 450);
-    this.gradient2 = this.$refs.canvas
-        .getContext("2d")
-        .createLinearGradient(0, 0, 0, 450);
+  components: {
+    LineChart,
+  },
 
-    this.gradient.addColorStop(0, "rgba(255, 0,0, 0.5)");
-    this.gradient.addColorStop(0.5, "rgba(255, 0, 0, 0.25)");
-    this.gradient.addColorStop(1, "rgba(255, 0, 0, 0)");
+  methods : {
+    logInfo(item){
+      if(item.length !== 0){
+        // console.log(item[0]._index, "It's work")
+        this.$emit("changeMonth", item[0]._index)
+      }
+    }
+  },
 
-    this.gradient2.addColorStop(0, "rgba(0, 231, 255, 0.9)");
-    this.gradient2.addColorStop(0.5, "rgba(0, 231, 255, 0.25)");
-    this.gradient2.addColorStop(1, "rgba(0, 231, 255, 0)");
-
-    this.renderChart(
-        {
-          labels: [
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-          ],
-          datasets: [
-            {
-              label: "Data One",
-              borderColor: "#FC2525",
-              pointBackgroundColor: "white",
-              borderWidth: 1,
-              pointBorderColor: "white",
-              backgroundColor: this.gradient,
-              data: [40, 39, 10, 40, 39, 60, 40],
-            },
-            {
-              label: "Data Two",
-              borderColor: "#05CBE1",
-              pointBackgroundColor: "white",
-              pointBorderColor: "white",
-              borderWidth: 1,
-              backgroundColor: this.gradient2,
-              data: [60, 55, 32, 10, 2, 12, 53],
-            },
-          ],
-        },
-        { responsive: true, maintainAspectRatio: false }
+  async mounted() {
+    var _this = this;
+    let date = new Date();
+    let { data } = await axiosInstance.get(
+      `reports/profit_graph/?year=${date.getFullYear()}`
     );
+
+    this.options = {
+      legend: {
+        display: false,
+      },
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        yAxes: [
+          {
+            ticks: {
+              beginAtZero: true,
+            },
+          },
+        ],
+      },
+      onClick(e, item) {
+        _this.logInfo(item);
+      },
+    };
+      this.dataset.datasets[0].data = data;
+
+    Vue.nextTick(() => this.$refs.chart.initDate(this.dataset, this.options));
   },
 };
 </script>

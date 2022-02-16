@@ -53,17 +53,17 @@
 
       <v-list dense>
 
-        <v-list-item to="/">
-          <v-list-item-icon>
-            <v-icon class="white--text">mdi-calendar</v-icon>
-          </v-list-item-icon>
+<!--        <v-list-item to="/">-->
+<!--          <v-list-item-icon>-->
+<!--            <v-icon class="white&#45;&#45;text">mdi-calendar</v-icon>-->
+<!--          </v-list-item-icon>-->
 
-          <v-list-item-content>
-            <v-list-item-title class="white--text"
-            >Мои записи</v-list-item-title
-            >
-          </v-list-item-content>
-        </v-list-item>
+<!--          <v-list-item-content>-->
+<!--            <v-list-item-title class="white&#45;&#45;text"-->
+<!--            >Мои записи</v-list-item-title-->
+<!--            >-->
+<!--          </v-list-item-content>-->
+<!--        </v-list-item>-->
 
         <v-list-item @click="servicesDialog = true">
           <v-list-item-icon>
@@ -101,7 +101,7 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item to="/statistics">
+        <v-list-item @click="statisticsDialog = true">
           <v-list-item-icon>
             <v-icon class="white--text">mdi-wallet-outline</v-icon>
           </v-list-item-icon>
@@ -123,6 +123,7 @@ import Services from "../views/Services/Services";
 import Clients from "@/views/Clients/Clients";
 import Profile from "../views/Profile/Profile";
 import Statistics from "../views/Statistics/Statistics";
+// import LineChart from "../views/Statistics/LineChart.vue";
 export default {
   name: "Sidebar",
 

@@ -1,50 +1,20 @@
-import { Line, mixins } from "vue-chartjs";
-const { reactiveProp } = mixins;
+import { Line } from "vue-chartjs";
 
 export default {
   extends: Line,
-  mixins: [reactiveProp],
-  props: ["chartData","options"],
 
-  data(){
-    return {
-      newOptions: {
-        responsive: true,
-        maintainAspectRatio: true
-      },
+  props : ["data", "options"],
 
-      datacollection: {
-        labels: [
-          "week 1",
-          "week 2",
-          "week 3",
-          "week 4",
-          "week 5",
-          "week 6",
-          "week 7",
-          "week 8",
-          "week 9",
-          "week 10",
-        ],
-        datasets: [
-          {
-            data: [86, 114, 106, 106, 107, 111, 133, 221, 783, 400, 300, 560],
-            label: "Africa",
-            borderColor: "#3e95cd",
-            fill: false,
-          },
-        ],
-      },
-    }
-  },
-
-  methods: {
-    renderChartMethod(data, options) {
-      this.renderChart(data, options);
+  methods : {
+    initDate(data, options){
+      this.renderChart(data, options)
     },
+
+    logInfo(){
+      console.log("It's work");
+    }
+
   },
 
-  mounted() {
-    this.renderChart(this.datacollection, this.newOptions);
-  },
+
 };

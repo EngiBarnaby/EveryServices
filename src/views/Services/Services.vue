@@ -164,7 +164,6 @@
               <span>{{ service.name }}</span>
               <span class="wrapper-watch"
                 >{{ service.duration }}
-                <v-icon>mdi-clock</v-icon>
               </span>
             </v-card-title>
 
@@ -172,7 +171,7 @@
               {{ service.description }}
             </v-card-subtitle>
 
-            <h3 class="price">Цена {{ service.cost }}</h3>
+            <h3 class="price">{{ service.cost }} &#8381;</h3>
 
             <div class="actions">
               <v-btn icon @click="onEditService(service)">

@@ -1,5 +1,5 @@
 ﻿<template>
-  <div>
+  <div v-if="!isFetching">
     <v-dialog
       v-model="dialogEventInfo"
       width="500"
@@ -278,6 +278,8 @@ export default {
   components: { DatePicker },
 
   data: () => ({
+    isFetching : true,
+
     addRecordDialog: false,
     dialogEventInfo: false,
 
@@ -610,6 +612,7 @@ export default {
   },
 
   async mounted() {
+    this.isFetching = false
     let date = new Date();
     this.focus = `${date.getFullYear()}-${
       date.getMonth() + 1
