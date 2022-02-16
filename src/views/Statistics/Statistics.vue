@@ -94,7 +94,6 @@ export default {
 
       this.profit = profit.data[this.currentMonth];
 
-      console.log(profit);
     },
 
     logInfo(month) {
