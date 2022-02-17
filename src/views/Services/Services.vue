@@ -160,20 +160,26 @@
           >
             <v-img :src="service.img" height="250px"></v-img>
 
-            <v-card-title class="d-flex justify-space-between align-center">
+            <v-card-title class="d-flex">
               <span>{{ service.name }}</span>
-              <span class="wrapper-watch"
-                >{{ service.duration }}
-              </span>
             </v-card-title>
 
-            <v-card-subtitle>
-              {{ service.description }}
-            </v-card-subtitle>
+            <div style="display: flex; flex-direction: column">
+              <v-card-subtitle>
+                {{ service.description }}
+              </v-card-subtitle>
 
-            <h3 class="price">{{ service.cost }} &#8381;</h3>
 
-            <div class="actions">
+              <div
+                  class="price-and-time"
+                  style="display: flex; justify-content: space-between"
+              >
+                <h3>{{ service.cost }} &#8381;</h3>
+                <h3>{{ service.duration }}</h3>
+              </div>
+            </div>
+
+            <div>
               <v-btn icon @click="onEditService(service)">
                 <v-icon>mdi-pencil-outline</v-icon>
               </v-btn>
@@ -273,7 +279,7 @@ export default {
       this.cost = null;
       this.duration = null;
       this.img = null;
-      this.description = null;
+      this.description = "";
       this.createDialog = false;
       this.editServiceDialog = false;
       this.deleteDialog = false;

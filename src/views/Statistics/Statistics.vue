@@ -78,12 +78,16 @@ export default {
       let date = new Date();
 
       let clients = await axiosInstance.get(
-        `reports/clients/?year=${date.getFullYear()}&month=${this.currentMonth}`
+        `reports/clients/?year=${date.getFullYear()}&month=${
+          this.currentMonth + 1
+        }`
       );
       this.clients = clients.data;
 
       let records = await axiosInstance.get(
-        `reports/records/?year=${date.getFullYear()}&month=${this.currentMonth}`
+        `reports/records/?year=${date.getFullYear()}&month=${
+          this.currentMonth + 1
+        }`
       );
 
       this.records = records.data;
@@ -93,7 +97,6 @@ export default {
       );
 
       this.profit = profit.data[this.currentMonth];
-
     },
 
     logInfo(month) {

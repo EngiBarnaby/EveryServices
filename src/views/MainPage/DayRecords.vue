@@ -2,7 +2,7 @@
   <div v-if="!isFetching">
     <v-dialog
       v-model="dialogEventInfo"
-      width="500"
+      width="600"
       @click:outside="closeAndClear"
     >
       <v-card class="pa-4">
@@ -73,12 +73,22 @@
           ></v-text-field>
 
           <v-btn
+            color="success"
+            @click="provideRecord"
+            v-if="!provided"
+            class="mr-4"
+            outlined
+          >
+            Завершить
+          </v-btn>
+
+          <v-btn
             outlined
             color="info"
             :disabled="!isValid"
             type="submit"
             class="mr-4"
-            >Изменить заявку</v-btn
+            >Изменить</v-btn
           >
 
           <v-btn outlined color="error" @click="refuseRecord"
@@ -174,6 +184,10 @@
       </v-card>
     </v-dialog>
 
+    <v-dialog v-model="UnconfirmedRecordsDialog" width="750">
+      <UnconfirmedListOfRecords />
+    </v-dialog>
+
     <v-row class="fill-height" justify="end">
       <v-col>
         <v-sheet class="calendar">
@@ -189,10 +203,46 @@
           >
             <template slot="day-header">
               <v-row justify="end">
+                <div class="unconfirmed">
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-badge
+                        color="red"
+                        overlap
+                        left
+
+                        :content="countUnconfirmedRecords"
+                      >
+                        <v-btn
+                          v-bind="attrs"
+                          v-on="on"
+                          icon
+                          @click="UnconfirmedRecordsDialog = true"
+                        >
+                          <v-icon style="color: white">
+                            mdi-exclamation-thick
+                          </v-icon>
+                        </v-btn>
+                      </v-badge>
+                    </template>
+                    <span>Неподтвержденный записи</span>
+                  </v-tooltip>
+                </div>
+
                 <div class="add-records">
-                  <v-btn icon @click="openAddRecordDialog">
-                    <v-icon style="color: white"> mdi-plus </v-icon>
-                  </v-btn>
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                        v-bind="attrs"
+                        v-on="on"
+                        icon
+                        @click="openAddRecordDialog"
+                      >
+                        <v-icon style="color: white"> mdi-plus </v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Добавить запись</span>
+                  </v-tooltip>
                 </div>
               </v-row>
             </template>
@@ -223,8 +273,8 @@
                 <v-menu open-on-hover top offset-x>
                   <template v-slot:activator="{ on, attrs }">
                     <span v-bind="attrs" v-on="on" class="event-title">
-                      Услуга : {{ event.name }}. Клиент {{ event.clientName
-                      }}<v-icon v-if="event.name != 'Удалена'" small
+                      Услуга : {{ event.name }}. Клиент {{ event.clientName }}
+                      <v-icon v-if="event.name != 'Удалена'" small
                         >mdi-help-circle</v-icon
                       >
                     </span>
@@ -264,6 +314,15 @@
       </v-col>
     </v-row>
 
+    <v-snackbar
+      v-model="snackbarSuccess"
+      timeout="4000"
+      color="success"
+      outlined
+    >
+      {{ snackbarTextSuccess }}
+    </v-snackbar>
+
     <v-snackbar v-model="snackbarError" timeout="4000" color="error" outlined>
       {{ snackbarTextError }}
     </v-snackbar>
@@ -274,17 +333,22 @@
 import DatePicker from "../../components/inputs/DatePicker";
 import axiosInstance from "../../plugins/axios";
 import Vue from "vue";
+import UnconfirmedListOfRecords from "@/views/MainPage/UnconfirmedListOfRecords";
 export default {
-  components: { DatePicker },
+  components: { DatePicker, UnconfirmedListOfRecords },
 
   data: () => ({
-    isFetching : true,
+    isFetching: true,
 
     addRecordDialog: false,
     dialogEventInfo: false,
+    UnconfirmedRecordsDialog: false,
 
     snackbarError: false,
     snackbarTextError: null,
+
+    snackbarSuccess: false,
+    snackbarTextSuccess: null,
 
     focus: "",
     events: [],
@@ -301,9 +365,16 @@ export default {
     date: null,
     time: null,
     id: null,
+    provided: null,
+
+    countUnconfirmedRecords: 0,
   }),
 
   methods: {
+
+
+    //CRUD//
+
     async changeRecord() {
       let data = null;
       let params = {
@@ -359,34 +430,7 @@ export default {
       };
 
       this.events.push(event);
-      this.closeAndClear()
-    },
-
-    async refuseRecord() {
-      await axiosInstance.delete(`records/${this.id}`);
-      await this.fetchEvents();
       this.closeAndClear();
-    },
-
-    closeAndClear() {
-      this.cost = null;
-      this.duration = null;
-      this.client_selected = null;
-      this.service_selected = null;
-      this.time = null;
-      this.id = null;
-      this.dialogEventInfo = false;
-    },
-
-    eventClicked({ event }) {
-      this.dialogEventInfo = true;
-      this.cost = event.cost;
-      this.duration = event.duration;
-      this.client_selected = event.client;
-      this.service_selected = event.service;
-      this.time = event.startTime;
-      this.id = event.id;
-      Vue.nextTick(() => this.$refs.date_picker.setNewValue(event.startDate));
     },
 
     async addRecord() {
@@ -448,6 +492,77 @@ export default {
       this.addRecordDialog = false;
     },
 
+    async refuseRecord() {
+      await axiosInstance.delete(`records/${this.id}`);
+      this.events = this.events.filter((el) => el.id !== this.id);
+      // await this.fetchEvents();
+      this.closeAndClear();
+    },
+
+    async fetchData() {
+      let date = new Date();
+      date = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
+      try {
+        let { data } = await axiosInstance.get(
+          `records/?date=${date}&confirmed=1`
+        );
+        this.parseRecords(data.results);
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    async fetchEvents() {
+      try {
+        let { data } = await axiosInstance.get(`records/?date=${this.parsDay}`);
+        this.parseRecords(data.results);
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    async provideRecord() {
+      let { data } = await axiosInstance.post(`records/provide/${this.id}/`);
+      this.snackbarTextSuccess = data.detail;
+      this.snackbarSuccess = true;
+      await this.fetchEvents();
+      this.closeAndClear();
+    },
+
+    getUnconfirmedRecordsCount() {
+      setInterval(() => {
+        axiosInstance
+          .get("records/?count&confirmed=0&canceled=0")
+          .then((res) => {
+            this.countUnconfirmedRecords = res.data.count;
+          });
+      }, 5000);
+    },
+
+    closeAndClear() {
+      this.cost = null;
+      this.duration = null;
+      this.client_selected = null;
+      this.service_selected = null;
+      this.time = null;
+      this.id = null;
+      this.provided = null;
+      this.dialogEventInfo = false;
+    },
+
+    eventClicked({ event }) {
+      console.log(event);
+      this.dialogEventInfo = true;
+      this.provided = event.provided;
+      this.cost = event.cost;
+      this.duration = event.duration;
+      this.client_selected = event.client;
+      this.service_selected = event.service;
+      this.time = event.startTime;
+      this.id = event.id;
+      Vue.nextTick(() => this.$refs.date_picker.setNewValue(event.startDate));
+    },
+
     openAddRecordDialog() {
       this.addRecordDialog = true;
       Vue.nextTick(() => this.$refs.date_picker.setNewValue(this.focus));
@@ -460,37 +575,6 @@ export default {
     next() {
       this.$refs.calendar.next();
       this.fetchEvents();
-    },
-
-    async fetchEvents() {
-      try {
-        let { data } = await axiosInstance.get(`records/?date=${this.parsDay}`);
-        this.parseRecords(data.results);
-      } catch (e) {
-        console.log(e);
-      }
-    },
-
-    async changeService() {
-      let date = new Date();
-      date = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
-      try {
-        let { data } = await axiosInstance.get(`records/?date=${date}`);
-        this.parseRecords(data.results);
-      } catch (e) {
-        console.log(e);
-      }
-    },
-
-    async fetchData() {
-      let date = new Date();
-      date = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
-      try {
-        let { data } = await axiosInstance.get(`records/?date=${date}`);
-        this.parseRecords(data.results);
-      } catch (e) {
-        console.log(e);
-      }
     },
 
     async parseRecords(data) {
@@ -508,6 +592,7 @@ export default {
             ? this.clients.filter((el) => el.id === record.client)[0].name
             : ": Удалён";
           array.push({
+            provided: record.provided,
             id: record.id,
             client: record.client,
             service: record.service,
@@ -533,6 +618,7 @@ export default {
             ? this.clients.filter((el) => el.id === record.client)[0].name
             : ": Клиент удалён";
           array.push({
+            provided: record.provided,
             id: record.id,
             client: record.client,
             service: record.service,
@@ -612,13 +698,20 @@ export default {
   },
 
   async mounted() {
-    this.isFetching = false
+    this.isFetching = false;
+
+    axiosInstance.get("records/?count&confirmed=0&canceled=0").then((res) => {
+      this.countUnconfirmedRecords = res.data.count;
+    });
+
+    this.getUnconfirmedRecordsCount();
+
     let date = new Date();
     this.focus = `${date.getFullYear()}-${
       date.getMonth() + 1
     }-${date.getDate()}`;
 
-    let clients = await axiosInstance.get("clients/contacts/opt");
+    let clients = await axiosInstance.get("clients/contacts/?blacklist=0&paging=0");
     this.clients = clients.data;
 
     let services = await axiosInstance.get("services/services/opt");
@@ -636,8 +729,16 @@ export default {
   margin-bottom: 0px !important;
 }
 
+.unconfirmed {
+  display: inline;
+  margin-bottom: 20px;
+  margin-right: 5px;
+  background-color: #a60dbf;
+  border-radius: 50%;
+  color: white !important;
+}
+
 .add-records {
-  color: black;
   display: inline;
   margin-bottom: 20px;
   margin-right: 20px;
