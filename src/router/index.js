@@ -25,15 +25,22 @@ const routes = [
     component: () => import("../views/Services/Services"),
   },
   {
-    path : "/statistics",
-    name : "statistics",
-    component : () => import("../views/Statistics/Statistics")
+    path: "/statistics",
+    name: "statistics",
+    component: () => import("../views/Statistics/Statistics"),
   },
   {
     path: "/test",
     name: "test",
     component: () => import("../views/Test"),
   },
+
+  {
+    path: "*",
+    name : "404",
+    component: () => import("../components/PageNotFound")
+  },
+
 ];
 
 const router = new VueRouter({
