@@ -204,13 +204,12 @@
             <template slot="day-header">
               <v-row justify="end">
                 <div class="unconfirmed">
-                  <v-tooltip bottom>
+                  <v-tooltip bottom v-if="countUnconfirmedRecords">
                     <template v-slot:activator="{ on, attrs }">
                       <v-badge
                         color="red"
                         overlap
                         left
-
                         :content="countUnconfirmedRecords"
                       >
                         <v-btn
@@ -224,6 +223,21 @@
                           </v-icon>
                         </v-btn>
                       </v-badge>
+                    </template>
+                    <span>Неподтвержденный записи</span>
+                  </v-tooltip>
+                  <v-tooltip bottom v-else>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                        v-bind="attrs"
+                        v-on="on"
+                        icon
+                        @click="UnconfirmedRecordsDialog = true"
+                      >
+                        <v-icon style="color: white">
+                          mdi-exclamation-thick
+                        </v-icon>
+                      </v-btn>
                     </template>
                     <span>Неподтвержденный записи</span>
                   </v-tooltip>
@@ -251,6 +265,11 @@
               <div class="calendar-header">
                 <v-sheet height="64">
                   <v-toolbar flat>
+
+                    <div>
+                      {{lastFiveDays}}
+                    </div>
+
                     <v-btn fab text small color="grey darken-2" @click="prev">
                       <v-icon small> mdi-chevron-left </v-icon>
                     </v-btn>
@@ -259,9 +278,15 @@
                       {{ currentDay }}
                     </div>
 
+
                     <v-btn fab text small color="grey darken-2" @click="next">
                       <v-icon small> mdi-chevron-right </v-icon>
                     </v-btn>
+
+                    <div>
+                      {{lastFiveDays}}
+                    </div>
+
                     <v-spacer></v-spacer>
                   </v-toolbar>
                 </v-sheet>
@@ -368,12 +393,13 @@ export default {
     provided: null,
 
     countUnconfirmedRecords: 0,
+
   }),
 
   methods: {
-
-
     //CRUD//
+
+
 
     async changeRecord() {
       let data = null;
@@ -588,6 +614,7 @@ export default {
           let recording_time = this.parseDate(record.recording_time);
           let startTime = this.parseTime(record.recording_time);
           let startDate = this.parseStartDate(record.recording_time);
+
           let clientName = record.client
             ? this.clients.filter((el) => el.id === record.client)[0].name
             : ": Удалён";
@@ -677,6 +704,21 @@ export default {
   },
 
   computed: {
+
+    lastFiveDays(){
+      let lastFiveDay = []
+      let currentDay = this.focus.split("-")
+
+      let date = new Date(currentDay[0], currentDay[1], currentDay[2])
+
+      for(let i = 0; i < 5; i++){
+        let day = new Date(date.setDate(date.getDate() - 1))
+
+        lastFiveDay.unshift({day : day.getDate(), dayTitle : day.toLocaleDateString("ru-RU", { weekday: 'long' }) })
+      }
+      return lastFiveDay
+    },
+
     dateWithTime() {
       return `${this.date} ${this.time}`;
     },
@@ -697,6 +739,12 @@ export default {
     },
   },
 
+  watch : {
+    focus(){
+      console.log(this.focus)
+    }
+  },
+
   async mounted() {
     this.isFetching = false;
 
@@ -711,8 +759,10 @@ export default {
       date.getMonth() + 1
     }-${date.getDate()}`;
 
-    let clients = await axiosInstance.get("clients/contacts/?blacklist=0&paging=0");
-    this.clients = clients.data;
+    let clients = await axiosInstance.get(
+      "clients/contacts/?blacklist=0&paging=0"
+    );
+    this.clients = clients.data.results;
 
     let services = await axiosInstance.get("services/services/opt");
     this.services = services.data;

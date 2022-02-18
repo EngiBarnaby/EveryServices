@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="!isFetching">
     <v-dialog v-model="deleteClientDialog" width="500px">
       <v-card>
         <v-card-title> Вы уверены, что хотите удалить клиента? </v-card-title>
@@ -10,7 +10,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <div v-if="!isFetching" >
+    <div>
       <v-container>
         <v-row justify="center">
           <v-text-field
@@ -24,7 +24,7 @@
           <v-col
             xs="12"
             sm="6"
-            md="3"
+            md="4"
             v-for="(client, index) in blacklist"
             :key="index"
           >
@@ -174,7 +174,11 @@ export default {
 }
 
 .comment {
-  font-size: 14px;
+  margin: 0; /* Убираем внешний отступ */
+  -webkit-line-clamp: 2; /* Число отображаемых строк */
+  display: -webkit-box; /* Включаем флексбоксы */
+  -webkit-box-orient: vertical; /* Вертикальная ориентация */
+  overflow: hidden; /* Обрезаем всё за пределами блока */
 }
 
 .actions {

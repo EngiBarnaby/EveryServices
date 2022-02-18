@@ -30,7 +30,8 @@ export default {
         datasets: [
           {
             label: "Доход",
-            backgroundColor: "#bb02d9",
+            backgroundColor: "transparent",
+            borderColor: "#bb02d9",
             data: [40, 39, 10, 40, 39, 80, 44, 10, 40, 39, 80, 44],
           },
         ],

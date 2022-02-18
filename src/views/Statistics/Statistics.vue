@@ -1,7 +1,7 @@
 <template>
   <div v-if="!isFetching">
     <div class="wrapper">
-      <div style="display: flex; justify-content: center; color: #a60dbf">
+      <div style="display: flex; justify-content: center; color: #a60dbf;">
         <h5 class="title">Статистика доходов и посещений</h5>
       </div>
       <div>
@@ -54,7 +54,7 @@
           </div>
         </div>
       </div>
-      <div style="display: flex; justify-content: center; color: #a60dbf">
+      <div style="display: flex; justify-content: center; color: #a60dbf; margin-top: 15px;margin-bottom: 15px;">
         <h4>Доход за текущий год</h4>
       </div>
       <div>
@@ -140,6 +140,7 @@ export default {
 <style scoped>
 .current-date {
   margin-left: 40px;
+  margin-bottom: 15px;
 }
 
 .income-icon {

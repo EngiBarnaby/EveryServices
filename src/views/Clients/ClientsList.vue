@@ -131,9 +131,14 @@
         </v-card>
       </v-dialog>
 
-      <v-dialog v-model="historyDialog" @click:outside="closeHistoryDialog" v-if="historyDialog"  width="700px">
+      <v-dialog
+        v-model="historyDialog"
+        @click:outside="closeHistoryDialog"
+        v-if="historyDialog"
+        width="700px"
+      >
         <v-card class="pa-4">
-         <History :client="currentClient"/>
+          <History :client="currentClient" />
         </v-card>
       </v-dialog>
     </div>
@@ -157,7 +162,7 @@
         >
           <v-card
             class="mx-auto card-body"
-            min-height="100"
+            min-height="200"
             max-width="500"
             elevation="0"
           >
@@ -182,7 +187,7 @@
 
                 <v-card min-height="100" min-width="250" elevation="0">
                   <v-card-title>
-                    <p>Комментарий</p>
+                    <p class="comment">Комментарий</p>
                   </v-card-title>
 
                   <v-card-subtitle>
@@ -240,7 +245,7 @@
               <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn v-bind="attrs" v-on="on" icon>
-                    <v-icon @click="onBan(client)">mdi-close-circle</v-icon>
+                    <v-icon @click="onBan(client)">mdi-account-cancel</v-icon>
                   </v-btn>
                 </template>
                 <span>Заблокировать</span>
@@ -263,8 +268,8 @@ import axiosInstance from "../../plugins/axios";
 import History from "@/views/Clients/History";
 export default {
   name: "ClientsList",
-  components : {
-    History
+  components: {
+    History,
   },
 
   data() {
@@ -278,26 +283,25 @@ export default {
       currentClient: {},
       comment: "",
 
-      history : {},
+      history: {},
 
       banDialog: false,
       createClientDialog: false,
       editClientDialog: false,
       deleteClientDialog: false,
-      historyDialog : false,
+      historyDialog: false,
     };
   },
 
   methods: {
-
-    closeHistoryDialog(){
-      this.currentClient = {}
+    closeHistoryDialog() {
+      this.currentClient = {};
     },
 
-    async openHistoryDialog(client){
-      this.currentClient = client
+    async openHistoryDialog(client) {
+      this.currentClient = client;
 
-      this.historyDialog = true
+      this.historyDialog = true;
     },
 
     async searchClient() {
@@ -394,6 +398,14 @@ export default {
 </script>
 
 <style scoped>
+.comment {
+  margin: 0; /* Убираем внешний отступ */
+  -webkit-line-clamp: 3; /* Число отображаемых строк */
+  display: -webkit-box; /* Включаем флексбоксы */
+  -webkit-box-orient: vertical; /* Вертикальная ориентация */
+  overflow: hidden; /* Обрезаем всё за пределами блока */
+}
+
 .searchInput {
   max-width: 300px !important;
 }
@@ -404,13 +416,12 @@ export default {
 
 .actions {
   position: absolute;
-  top: 0px;
+  top: 5px;
   right: 5px;
 }
 
-
 .empty-card {
-  height: 100px;
+  min-height : 200px;
   /*width: 400px;*/
   border: 1px solid #7b7b7b;
   border-radius: 25px;
@@ -425,7 +436,7 @@ export default {
 
 .card-body {
   width: 300px !important;
-  padding: 10px !important;
+  padding: 15px !important;
   border: 2px solid #a60dbf !important;
 }
 

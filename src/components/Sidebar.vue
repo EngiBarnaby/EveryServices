@@ -31,6 +31,7 @@
     >
       <template v-slot:prepend>
         <v-list-item
+          @click="profileDialog = true"
           two-line
           style="margin: 0 auto; width: 90%"
           class="d-flex align-center justify-center mt-2"
@@ -43,11 +44,6 @@
             <v-list-item-title class="white--text"
               >{{ getUserInfo.first_name }}
               {{ getUserInfo.last_name }}</v-list-item-title
-            >
-            <v-list-item-subtitle
-              @click="profileDialog = true"
-              class="white--text profile-text"
-              >Перейти к профилю</v-list-item-subtitle
             >
           </v-list-item-content>
         </v-list-item>
