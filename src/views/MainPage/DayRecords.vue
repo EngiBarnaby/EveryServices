@@ -721,25 +721,25 @@ export default {
         switch (dateTitle) {
           case "понедельник":
             dateTitle = "пн";
-            break
+            break;
           case "вторник":
             dateTitle = "вт";
-            break
+            break;
           case "среда":
             dateTitle = "ср";
-            break
+            break;
           case "четверг":
             dateTitle = "чт";
-            break
+            break;
           case "пятница":
             dateTitle = "пт";
-            break
+            break;
           case "суббота":
             dateTitle = "сб";
-            break
+            break;
           case "воскресенье":
             dateTitle = "пн";
-            break
+            break;
         }
         lastFiveDay.unshift({
           day: day.getDate(),
@@ -757,36 +757,36 @@ export default {
       let date = new Date(currentDay[0], currentDay[1], currentDay[2]);
 
       for (let i = 0; i < 5; i++) {
-      let day = new Date(date.setDate(date.getDate() + 1));
+        let day = new Date(date.setDate(date.getDate() + 1));
         let dateTitle = day.toLocaleDateString("ru-RU", { weekday: "long" });
         switch (dateTitle) {
           case "понедельник":
             dateTitle = "пн";
-            break
+            break;
           case "вторник":
             dateTitle = "вт";
-            break
+            break;
           case "среда":
             dateTitle = "ср";
-            break
+            break;
           case "четверг":
             dateTitle = "чт";
-            break
+            break;
           case "пятница":
             dateTitle = "пт";
-            break
+            break;
           case "суббота":
             dateTitle = "сб";
-            break
+            break;
           case "воскресенье":
             dateTitle = "пн";
-            break
+            break;
         }
-      lastFiveDay.push({
-        day: day.getDate(),
-        dayTitle: dateTitle,
-        date: `${day.getFullYear()}-${day.getMonth()}-${day.getDate()}`,
-      });
+        lastFiveDay.push({
+          day: day.getDate(),
+          dayTitle: dateTitle,
+          date: `${day.getFullYear()}-${day.getMonth()}-${day.getDate()}`,
+        });
       }
       return lastFiveDay;
     },
