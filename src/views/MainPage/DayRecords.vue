@@ -265,9 +265,11 @@
               <div class="calendar-header">
                 <v-sheet height="64">
                   <v-toolbar flat>
-
-                    <div>
-                      {{lastFiveDays}}
+                    <div v-for="day in lastFiveDays" :key="day.date">
+                      <p>{{ day.dayTitle }}</p>
+                      <div class="day" @click="changeDate(day.date)">
+                        {{ day.day }}
+                      </div>
                     </div>
 
                     <v-btn fab text small color="grey darken-2" @click="prev">
@@ -278,13 +280,15 @@
                       {{ currentDay }}
                     </div>
 
-
                     <v-btn fab text small color="grey darken-2" @click="next">
                       <v-icon small> mdi-chevron-right </v-icon>
                     </v-btn>
 
-                    <div>
-                      {{lastFiveDays}}
+                    <div v-for="day in nextFiveDays" :key="day.date">
+                      <p>{{ day.dayTitle }}</p>
+                      <div class="day" @click="changeDate(day.date)">
+                        {{ day.day }}
+                      </div>
                     </div>
 
                     <v-spacer></v-spacer>
@@ -393,13 +397,14 @@ export default {
     provided: null,
 
     countUnconfirmedRecords: 0,
-
   }),
 
   methods: {
     //CRUD//
 
-
+    changeDate(date) {
+      this.focus = date;
+    },
 
     async changeRecord() {
       let data = null;
@@ -704,23 +709,86 @@ export default {
   },
 
   computed: {
+    lastFiveDays() {
+      let lastFiveDay = [];
+      let currentDay = this.focus.split("-");
 
-    lastFiveDays(){
-      let lastFiveDay = []
-      let currentDay = this.focus.split("-")
+      let date = new Date(currentDay[0], currentDay[1], currentDay[2]);
 
-      let date = new Date(currentDay[0], currentDay[1], currentDay[2])
-
-      for(let i = 0; i < 5; i++){
-        let day = new Date(date.setDate(date.getDate() - 1))
-
-        lastFiveDay.unshift({day : day.getDate(), dayTitle : day.toLocaleDateString("ru-RU", { weekday: 'long' }) })
+      for (let i = 0; i < 5; i++) {
+        let day = new Date(date.setDate(date.getDate() - 1));
+        let dateTitle = day.toLocaleDateString("ru-RU", { weekday: "long" });
+        switch (dateTitle) {
+          case "понедельник":
+            dateTitle = "пн";
+            break
+          case "вторник":
+            dateTitle = "вт";
+            break
+          case "среда":
+            dateTitle = "ср";
+            break
+          case "четверг":
+            dateTitle = "чт";
+            break
+          case "пятница":
+            dateTitle = "пт";
+            break
+          case "суббота":
+            dateTitle = "сб";
+            break
+          case "воскресенье":
+            dateTitle = "пн";
+            break
+        }
+        lastFiveDay.unshift({
+          day: day.getDate(),
+          dayTitle: dateTitle,
+          date: `${day.getFullYear()}-${day.getMonth()}-${day.getDate()}`,
+        });
       }
-      return lastFiveDay
+      return lastFiveDay;
     },
 
-    dateWithTime() {
-      return `${this.date} ${this.time}`;
+    nextFiveDays() {
+      let lastFiveDay = [];
+      let currentDay = this.focus.split("-");
+
+      let date = new Date(currentDay[0], currentDay[1], currentDay[2]);
+
+      for (let i = 0; i < 5; i++) {
+      let day = new Date(date.setDate(date.getDate() + 1));
+        let dateTitle = day.toLocaleDateString("ru-RU", { weekday: "long" });
+        switch (dateTitle) {
+          case "понедельник":
+            dateTitle = "пн";
+            break
+          case "вторник":
+            dateTitle = "вт";
+            break
+          case "среда":
+            dateTitle = "ср";
+            break
+          case "четверг":
+            dateTitle = "чт";
+            break
+          case "пятница":
+            dateTitle = "пт";
+            break
+          case "суббота":
+            dateTitle = "сб";
+            break
+          case "воскресенье":
+            dateTitle = "пн";
+            break
+        }
+      lastFiveDay.push({
+        day: day.getDate(),
+        dayTitle: dateTitle,
+        date: `${day.getFullYear()}-${day.getMonth()}-${day.getDate()}`,
+      });
+      }
+      return lastFiveDay;
     },
 
     currentDay() {
@@ -732,6 +800,10 @@ export default {
       }
     },
 
+    dateWithTime() {
+      return `${this.date} ${this.time}`;
+    },
+
     parsDay() {
       let date = this.focus.split("-");
       date = `${date[2]}.${date[1]}.${date[0]}`;
@@ -739,10 +811,10 @@ export default {
     },
   },
 
-  watch : {
-    focus(){
-      console.log(this.focus)
-    }
+  watch: {
+    focus() {
+      this.fetchEvents();
+    },
   },
 
   async mounted() {
@@ -759,9 +831,7 @@ export default {
       date.getMonth() + 1
     }-${date.getDate()}`;
 
-    let clients = await axiosInstance.get(
-      "clients/contacts/?blacklist=0&paging=0"
-    );
+    let clients = await axiosInstance.get("clients/contacts/?paging=0");
     this.clients = clients.data.results;
 
     let services = await axiosInstance.get("services/services/opt");
@@ -775,6 +845,23 @@ export default {
 </script>
 
 <style scoped>
+.day {
+  margin-bottom: 23px;
+  margin-right: 5px;
+  margin-left: 5px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  color: black;
+  padding: 15px;
+  border-radius: 50%;
+  border: 1px solid #a60dbf;
+  min-height: 50px;
+  min-width: 50px;
+  max-height: 50px;
+  max-width: 50px;
+}
+
 .v-application p {
   margin-bottom: 0px !important;
 }
