@@ -26,7 +26,7 @@ axiosInstance.interceptors.request.use(
 );
 
 axiosInstance.interceptors.response.use(undefined, (error) => {
-  if (error.response && error.response.status === 401 || router.name !== "password-recovery") {
+  if (error.response && error.response.status === 401) {
     localStorage.removeItem("token");
     router.push({ path: "login" });
   }

@@ -16,6 +16,11 @@
       <Profile />
     </v-dialog>
 
+    <v-dialog v-model="scheduleDialog" width="1000" height="500px">
+      <Schedule />
+    </v-dialog>
+
+
     <v-dialog v-model="statisticsDialog" width="1000" height="500px">
       <Statistics />
     </v-dialog>
@@ -80,7 +85,7 @@
           </v-list-item-icon>
 
           <v-list-item-content>
-            <v-list-item-title class="white--text"
+            <v-list-item-title @click="scheduleDialog = true" class="white--text"
               >Моё расписание</v-list-item-title
             >
           </v-list-item-content>
@@ -120,11 +125,13 @@ import Services from "../views/Services/Services";
 import Clients from "@/views/Clients/Clients";
 import Profile from "../views/Profile/Profile";
 import Statistics from "../views/Statistics/Statistics";
+import Schedule from "@/views/Schedule/Schedule";
 // import LineChart from "../views/Statistics/LineChart.vue";
 export default {
   name: "Sidebar",
 
   components: {
+    Schedule,
     Services,
     Clients,
     Profile,
@@ -133,6 +140,7 @@ export default {
 
   data() {
     return {
+      scheduleDialog:false,
       servicesDialog: false,
       clientsDialog: false,
       profileDialog: false,
