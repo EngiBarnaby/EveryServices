@@ -17,13 +17,13 @@
         </div>
         <div class="description">
           <div v-if="record.provided">
-            <p class="green--text">Завершена</p>
+            <p class="green--text content">Завершена</p>
           </div>
           <div v-else>
-            <p class="red--text">Не завершена</p>
+            <p class="red--text content">Не завершена</p>
           </div>
           <div v-if="record.canceled">
-            <p class="red--text">Отменена</p>
+            <p class="red--text content">Отменена</p>
           </div>
           <div v-if="record.cancellation_reason">
             Причина отмены: {{record.cancellation_reason}}
@@ -96,7 +96,11 @@ export default {
 </script>
 
 <style scoped>
-.description {
+
+
+.content {
+  display: flex;
+  justify-content: end;
 }
 
 .record {
