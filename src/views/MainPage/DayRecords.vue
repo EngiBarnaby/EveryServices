@@ -713,7 +713,7 @@ export default {
       let lastFiveDay = [];
       let currentDay = this.focus.split("-");
 
-      let date = new Date(currentDay[0], currentDay[1], currentDay[2]);
+      let date = new Date(currentDay[0], +currentDay[1] - 1, currentDay[2]);
 
       for (let i = 0; i < 5; i++) {
         let day = new Date(date.setDate(date.getDate() - 1));
@@ -744,7 +744,7 @@ export default {
         lastFiveDay.unshift({
           day: day.getDate(),
           dayTitle: dateTitle,
-          date: `${day.getFullYear()}-${day.getMonth()}-${day.getDate()}`,
+          date: `${day.getFullYear()}-${day.getMonth() + 1}-${day.getDate()}`,
         });
       }
       return lastFiveDay;
@@ -754,7 +754,7 @@ export default {
       let lastFiveDay = [];
       let currentDay = this.focus.split("-");
 
-      let date = new Date(currentDay[0], currentDay[1], currentDay[2]);
+      let date = new Date(currentDay[0], +currentDay[1] - 1, currentDay[2]);
 
       for (let i = 0; i < 5; i++) {
         let day = new Date(date.setDate(date.getDate() + 1));
@@ -785,7 +785,7 @@ export default {
         lastFiveDay.push({
           day: day.getDate(),
           dayTitle: dateTitle,
-          date: `${day.getFullYear()}-${day.getMonth()}-${day.getDate()}`,
+          date: `${day.getFullYear()}-${day.getMonth() + 1}-${day.getDate()}`,
         });
       }
       return lastFiveDay;
@@ -813,6 +813,7 @@ export default {
 
   watch: {
     focus() {
+      console.log(this.focus)
       this.fetchEvents();
     },
   },
