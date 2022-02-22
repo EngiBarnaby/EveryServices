@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isLoading == false">
+  <div>
 
 
     <v-container>
@@ -89,6 +89,7 @@
         </v-sheet>
         <v-sheet height="600">
           <v-calendar
+           :loading="isLoading === true"
             ref="calendar"
             v-model="value"
             :weekdays="[1, 2, 3, 4, 5, 6, 0]"
@@ -115,6 +116,13 @@
       </div>
 
     </v-container>
+
+    <v-snackbar
+      v-model="snackbarHolder"
+      :color="snackbarStatus"
+    >
+      {{ snackbarText }}
+    </v-snackbar>
   </div>
 </template>
 
@@ -138,6 +146,10 @@ export default {
       calendarData:[],
       dataForEveryDay:{},
 
+      snackbarText:'',
+      snackbarHolder:false,
+      snackbarStatus:null,
+
     }
   },
   watch:{
@@ -147,12 +159,15 @@ export default {
 
   },
   methods:{
+    openSnackbar(status,text){
+      this.snackbarText = text
+      this.snackbarStatus = status
+      this.snackbarHolder = true
+    },
       calendarNextPage(){
-
        this.$refs.calendar.next()
     },
      calendarPrevPage(){
-
       this.$refs.calendar.prev()
     },
     async fetchData(){
@@ -195,7 +210,18 @@ export default {
         schedule_days: this.periodData,
         schedule_time: this.timeData
       })
+        .then((response)=>{
+            if (response.status === 201){
+              this.openSnackbar('success', "Сменный график успешно создан!")
+              this.sessionMenu = false
+              this.fetchData()
+            }
+            if (response.response.status === 400){
+              this.openSnackbar('error', 'На эту дату график уже создан')
+            }
+        })
     },
+
   },
   async mounted(){
    this.isLoading = true
