@@ -17,7 +17,9 @@
     </v-dialog>
 
     <v-dialog v-model="scheduleDialog" width="1000" height="500px">
+      <v-card>
       <Schedule />
+      </v-card>
     </v-dialog>
 
 
@@ -79,17 +81,24 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item>
+
+
+
+
+        <v-list-item @click="scheduleDialog = true">
           <v-list-item-icon>
-            <v-icon class="white--text">mdi-calendar-month-outline</v-icon>
+            <v-icon class="white--text">mdi-account-outline</v-icon>
           </v-list-item-icon>
 
           <v-list-item-content>
-            <v-list-item-title @click="scheduleDialog = true" class="white--text"
-              >Моё расписание</v-list-item-title
+            <v-list-item-title class="white--text"
+            >Моё расписание</v-list-item-title
             >
           </v-list-item-content>
         </v-list-item>
+
+
+
 
         <v-list-item @click="clientsDialog = true">
           <v-list-item-icon>
