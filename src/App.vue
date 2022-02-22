@@ -17,7 +17,7 @@ export default {
 
   computed : {
     isLogin(){
-      if(this.$route.name === "login"){
+      if(this.$route.name === "login" || this.$route.name === "404"){
         return true
       }
       else {

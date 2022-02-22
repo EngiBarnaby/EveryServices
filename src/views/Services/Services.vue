@@ -148,7 +148,7 @@
         <v-col
           xs="12"
           sm="6"
-          md="3"
+          md="4"
           v-for="(service, index) in services"
           :key="index"
         >
@@ -160,21 +160,25 @@
           >
             <v-img :src="service.img" height="250px"></v-img>
 
-            <v-card-title class="d-flex justify-space-between align-center">
+            <v-card-title class="d-flex pa-0">
               <span>{{ service.name }}</span>
-              <span class="wrapper-watch"
-                >{{ service.duration }}
-                <v-icon>mdi-clock</v-icon>
-              </span>
             </v-card-title>
 
-            <v-card-subtitle>
-              {{ service.description }}
-            </v-card-subtitle>
+            <div style="display: flex; flex-direction: column">
+              <v-card-subtitle class="description">
+                {{ service.description }}
+              </v-card-subtitle>
 
-            <h3 class="price">Цена {{ service.cost }}</h3>
+              <div
+                class="price-and-time"
+                style="display: flex; justify-content: space-between"
+              >
+                <h3>{{ service.cost }} &#8381;</h3>
+                <h3>{{ service.duration }}</h3>
+              </div>
+            </div>
 
-            <div class="actions">
+            <div>
               <v-btn icon @click="onEditService(service)">
                 <v-icon>mdi-pencil-outline</v-icon>
               </v-btn>
@@ -184,7 +188,7 @@
             </div>
           </v-card>
         </v-col>
-        <v-col xs="12" sm="6" md="3">
+        <v-col xs="12" sm="6" md="4">
           <div class="empty-card mx-auto" @click="createDialog = true">
             <v-icon x-large> mdi-plus </v-icon>
           </div>
@@ -274,7 +278,7 @@ export default {
       this.cost = null;
       this.duration = null;
       this.img = null;
-      this.description = null;
+      this.description = "";
       this.createDialog = false;
       this.editServiceDialog = false;
       this.deleteDialog = false;
@@ -317,6 +321,17 @@ export default {
 </script>
 
 <style scoped>
+
+
+.description {
+  padding-bottom: 20px;
+  margin: 0; /* Убираем внешний отступ */
+  -webkit-line-clamp: 2; /* Число отображаемых строк */
+  display: -webkit-box; /* Включаем флексбоксы */
+  -webkit-box-orient: vertical; /* Вертикальная ориентация */
+  overflow: hidden; /* Обрезаем всё за пределами блока */
+}
+
 .actions {
   position: absolute;
   bottom: 10px;

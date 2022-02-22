@@ -36,7 +36,7 @@
           <v-text-field
             name="password"
             v-model="newPassword"
-            label="Введите пароль"
+            label="Введите новый пароль"
             :append-icon="isVisible ? 'mdi-eye' : 'mdi-eye-off'"
             @click:append="() => (isVisible = !isVisible)"
             :type="isVisible ? 'password' : 'text'"

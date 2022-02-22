@@ -1,6 +1,5 @@
 <template>
   <div>
-
     <v-tabs v-model="tab" centered align-with-title>
       <v-tabs-slider color="blue"></v-tabs-slider>
 

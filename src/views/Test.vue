@@ -2,6 +2,7 @@
   <div>
     <DatePicker ref="date_picker" />
     <v-btn @click="test">Test</v-btn>
+    <AreaChart />
   </div>
 </template>
 

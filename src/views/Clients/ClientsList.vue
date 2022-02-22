@@ -130,12 +130,23 @@
           </v-form>
         </v-card>
       </v-dialog>
+
+      <v-dialog
+        v-model="historyDialog"
+        @click:outside="closeHistoryDialog"
+        v-if="historyDialog"
+        width="700px"
+      >
+        <v-card class="pa-4">
+          <History :client="currentClient" />
+        </v-card>
+      </v-dialog>
     </div>
 
     <v-container>
       <v-row justify="center">
         <v-text-field
-          v-debounce:1000ms="searchClient"
+          v-debounce:500ms="searchClient"
           v-model="search"
           class="searchInput"
           label="Поиск"
@@ -145,7 +156,7 @@
         <v-col
           xs="12"
           sm="6"
-          md="3"
+          md="4"
           v-for="(client, index) in clients"
           :key="index"
         >
@@ -156,7 +167,7 @@
             elevation="0"
           >
             <v-card-title class="d-flex justify-space-between align-center">
-              <span>{{ client.name }}</span>
+              <span class="client-name">{{ client.name }}</span>
             </v-card-title>
 
             <v-card-subtitle>
@@ -176,7 +187,7 @@
 
                 <v-card min-height="100" min-width="250" elevation="0">
                   <v-card-title>
-                    <p>Комментарий</p>
+                    <p class="comment">Комментарий</p>
                   </v-card-title>
 
                   <v-card-subtitle>
@@ -192,6 +203,20 @@
             </div>
 
             <div class="actions">
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    v-bind="attrs"
+                    v-on="on"
+                    icon
+                    @click="openHistoryDialog(client)"
+                  >
+                    <v-icon>mdi-book-multiple</v-icon>
+                  </v-btn>
+                </template>
+                <span>История</span>
+              </v-tooltip>
+
               <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn
@@ -220,7 +245,7 @@
               <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn v-bind="attrs" v-on="on" icon>
-                    <v-icon @click="onBan(client)">mdi-close-circle</v-icon>
+                    <v-icon @click="onBan(client)">mdi-account-cancel</v-icon>
                   </v-btn>
                 </template>
                 <span>Заблокировать</span>
@@ -228,7 +253,7 @@
             </div>
           </v-card>
         </v-col>
-        <v-col xs="12" sm="6" md="3">
+        <v-col xs="12" sm="6" md="4">
           <div class="empty-card mx-auto" @click="createClientDialog = true">
             <v-icon x-large> mdi-plus </v-icon>
           </div>
@@ -240,8 +265,12 @@
 
 <script>
 import axiosInstance from "../../plugins/axios";
+import History from "@/views/Clients/History";
 export default {
   name: "ClientsList",
+  components: {
+    History,
+  },
 
   data() {
     return {
@@ -254,17 +283,30 @@ export default {
       currentClient: {},
       comment: "",
 
+      history: {},
+
       banDialog: false,
       createClientDialog: false,
       editClientDialog: false,
       deleteClientDialog: false,
+      historyDialog: false,
     };
   },
 
   methods: {
+    closeHistoryDialog() {
+      this.currentClient = {};
+    },
+
+    async openHistoryDialog(client) {
+      this.currentClient = client;
+
+      this.historyDialog = true;
+    },
+
     async searchClient() {
       let { data } = await axiosInstance.get(
-        `clients/contacts/?search=${this.search}`
+        `clients/contacts/?search=${this.search}&blacklist=0`
       );
       this.clients = data.results;
     },
@@ -356,6 +398,14 @@ export default {
 </script>
 
 <style scoped>
+.comment {
+  margin: 0; /* Убираем внешний отступ */
+  -webkit-line-clamp: 3; /* Число отображаемых строк */
+  display: -webkit-box; /* Включаем флексбоксы */
+  -webkit-box-orient: vertical; /* Вертикальная ориентация */
+  overflow: hidden; /* Обрезаем всё за пределами блока */
+}
+
 .searchInput {
   max-width: 300px !important;
 }
@@ -366,18 +416,12 @@ export default {
 
 .actions {
   position: absolute;
-  top: 0px;
+  top: 5px;
   right: 5px;
 }
 
-.price {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-}
-
 .empty-card {
-  height: 200px;
+  min-height : 200px;
   /*width: 400px;*/
   border: 1px solid #7b7b7b;
   border-radius: 25px;
@@ -391,7 +435,8 @@ export default {
 }
 
 .card-body {
-  padding: 10px !important;
+  width: 300px !important;
+  padding: 15px !important;
   border: 2px solid #a60dbf !important;
 }
 
