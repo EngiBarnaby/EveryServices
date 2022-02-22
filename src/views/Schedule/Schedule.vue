@@ -142,20 +142,18 @@ export default {
   },
   watch:{
     value(){
-      console.log(this.value)
+      this.fetchData()
     }
+
   },
   methods:{
-    async calendarNextPage(){
-      console.log(this.$refs.calendar)
-      await this.fetchData()
-      await this.$refs.calendar.next()
+      calendarNextPage(){
 
+       this.$refs.calendar.next()
     },
-    async calendarPrevPage(){
-      await this.fetchData()
-     await this.$refs.calendar.prev()
+     calendarPrevPage(){
 
+      this.$refs.calendar.prev()
     },
     async fetchData(){
       this.isLoading = true
@@ -207,9 +205,9 @@ export default {
        for (let i = 0; i < this.calendarData.length; i++){
          this.dataForEveryDay[this.calendarData[i].date.split('.').reverse().join('-')] = {working : this.calendarData[i].working, special : this.calendarData[i].special, start: this.calendarData[i].start, ranges: this.calendarData[i].ranges}
        }
-       console.log(this.dataForEveryDay)
+
     })
-    console.log(this.value)
+
    this.isLoading = false
 
   },
