@@ -17,7 +17,7 @@ export default {
 
   computed : {
     isLogin(){
-      if(this.$route.name === "login" || this.$route.name === "404"){
+      if(this.$route.name === "login" || this.$route.name === "404" || this.$route.name === "password-recovery"){
         return true
       }
       else {
