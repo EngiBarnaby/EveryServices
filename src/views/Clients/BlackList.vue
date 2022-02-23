@@ -63,7 +63,7 @@
                     </v-card-subtitle>
                     <v-card-actions>
                       <v-btn outlined color="info" @click="unBan(client)"
-                        >Разбанить</v-btn
+                        >Разблокировать</v-btn
                       >
                     </v-card-actions>
                   </v-card>

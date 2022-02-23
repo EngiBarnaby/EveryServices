@@ -13,7 +13,7 @@
           <div style="z-index: 1">
             <h1
               style="
-                font-size: 60px !important;
+                font-size: 46px !important;
                 display: flex;
                 justify-content: center;
               "
@@ -28,7 +28,7 @@
           <div style="z-index: 1">
             <h1
               style="
-                font-size: 60px !important;
+                font-size: 36px !important;
                 display: flex;
                 justify-content: center;
               "
@@ -43,7 +43,7 @@
           <div style="z-index: 1">
             <h1
               style="
-                font-size: 60px !important;
+                font-size: 36px !important;
                 display: flex;
                 justify-content: center;
               "
@@ -145,27 +145,28 @@ export default {
 
 .income-icon {
   position: absolute;
-  top: 0px;
-  left: 0px;
-  font-size: 100px;
+  top: 5px;
+  left: 5px;
+  font-size: 50px;
   z-index: 0;
   color: #bdbdbd;
+
 }
 
 .clients-icon {
   position: absolute;
-  top: 0px;
-  left: 0px;
-  font-size: 100px;
+  top: 5px;
+  left: 5px;
+  font-size: 50px;
   z-index: 0;
   color: #bdbdbd;
 }
 
 .session-icon {
   position: absolute;
-  top: 0px;
-  left: 0px;
-  font-size: 100px;
+  top: 5px;
+  left: 5px;
+  font-size: 50px;
   z-index: 0;
   color: #fab132;
 }
@@ -209,4 +210,5 @@ export default {
   background-color: white;
   min-height: 100%;
 }
+.v-icon{}
 </style>

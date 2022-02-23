@@ -81,6 +81,7 @@
             <v-text-field
               outlined
               dense
+              type="tel"
               v-model="currentClient.phone"
               :rules="[(v) => !!v || 'Обязательное поле']"
               label="Телефон"
@@ -89,6 +90,7 @@
             <v-text-field
               outlined
               dense
+              type="email"
               v-model="currentClient.email"
               label="email"
             ></v-text-field>
@@ -124,7 +126,7 @@
               :disabled="!isValid"
               type="submit"
               class="mr-4"
-              >Забанить
+              >Заблокировать
             </v-btn>
             <v-btn outlined @click="clearAndClose" color="error">Отмена</v-btn>
           </v-form>
@@ -195,7 +197,7 @@
                   </v-card-subtitle>
                   <v-card-actions>
                     <v-btn outlined color="info" @click="unBan(client)"
-                      >Разбанить</v-btn
+                      >Разблокировать</v-btn
                     >
                   </v-card-actions>
                 </v-card>
@@ -260,6 +262,14 @@
         </v-col>
       </v-row>
     </v-container>
+
+    <v-snackbar
+      v-model="snackbarHolder"
+      :color="snackbarStatus"
+    >
+      {{ snackbarText }}
+    </v-snackbar>
+
   </div>
 </template>
 
@@ -290,10 +300,20 @@ export default {
       editClientDialog: false,
       deleteClientDialog: false,
       historyDialog: false,
+
+
+      snackbarText:'',
+      snackbarHolder:false,
+      snackbarStatus:null,
     };
   },
 
   methods: {
+    openSnackbar(status,text){
+      this.snackbarText = text
+      this.snackbarStatus = status
+      this.snackbarHolder = true
+    },
     closeHistoryDialog() {
       this.currentClient = {};
     },
@@ -338,7 +358,19 @@ export default {
       let { data } = await axiosInstance.post(
         "clients/contacts/",
         this.currentClient
-      );
+      )
+      .then((response)=>{
+        console.log(response)
+        if (response.status === 201){
+          this.openSnackbar("success", response.data.detail)
+          this.clearAndClose()
+        }
+        if (response.response.status === 400){
+          this.openSnackbar("error", response.response.data.email)
+          this.clearAndClose()
+        }
+
+      })
       this.clients.unshift(data);
       this.clearAndClose();
     },
