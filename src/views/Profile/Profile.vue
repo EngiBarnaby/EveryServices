@@ -80,12 +80,12 @@
       <v-card class="pa-4">
         <v-form @submit.prevent="changePhone">
           <v-card-title> Изменить номер телефона </v-card-title>
-          <v-text-field v-model="newNumberPhone" label="Новый номер телефона">
+          <v-text-field hide-details v-model="newNumberPhone" label="Новый номер телефона">
           </v-text-field>
 
           <v-card-actions class="d-flex justify-center">
             <div v-if="approveChangePhonePin">
-              <v-otp-input v-model="pin" length="4" type="number"></v-otp-input>
+              <v-otp-input style="width: 50%; margin: 0 auto" v-model="pin" length="4" type="number"></v-otp-input>
               <v-btn outlined color="info" @click="changePhoneNum"
                 >Подтвердить</v-btn
               >

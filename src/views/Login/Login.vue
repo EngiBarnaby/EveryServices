@@ -126,6 +126,7 @@
                     </p>
 
                     <v-otp-input
+                      style="width: 50%; margin: 0 auto"
                       v-model="pin"
                       length="4"
                       type="number"
