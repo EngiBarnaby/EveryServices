@@ -270,6 +270,7 @@ export default {
       this.registrationPassword = null;
       this.registrationPassword2 = null;
       this.pin = null;
+      this.showPin = false
     },
 
     async onLogin() {
