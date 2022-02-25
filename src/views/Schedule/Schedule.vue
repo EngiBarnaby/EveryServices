@@ -176,10 +176,16 @@
               </div>
             </template>
             <template v-slot:day="{date, month}">
-              <div v-if="value.split('-')[1] == month" >
-              <div style="font-size: 0.8rem" v-if="dataForEveryDay[date].ranges !== null">{{ dataForEveryDay[date].ranges[0] }}</div>
+              <div class="main-content" style="width: 100%; height: 100%" v-if="value.split('-')[1] == month" >
+              <div style="font-size: 0.8rem; position: absolute" v-if="dataForEveryDay[date].ranges !== null">{{ dataForEveryDay[date].ranges[0] }}
               </div>
+<div  class="edit-content">
+  <div  class="edit-block_icon"><v-icon class="edit-icon" >mdi-clock-edit-outline</v-icon></div>
+</div>
+              </div>
+
             </template>
+
 
 
 
@@ -221,10 +227,8 @@ export default {
       durationStart:"09:00",
       durationEnd:"18:00",
 
-
       durationWeekStart:"09:00",
       durationWeekEnd:"18:00",
-
 
       weekMenu:false,
       snackbarText:'',
@@ -327,5 +331,40 @@ export default {
 </script>
 
 <style scoped>
+
+.main-content{
+  position: relative;
+}
+.edit-content{
+  height: 80% !important;
+  width: 100%;
+  position: absolute;
+  color: white !important;
+
+}
+.edit-content:hover{
+  background-color: rgba(123, 123, 123, 0.1);
+  height: 80% !important;
+  width: 100%;
+  position: absolute;
+  cursor: pointer;
+  color: gray;
+}
+.edit-content:hover .edit-icon{
+  color: gray;
+}
+
+.edit-block_icon{
+  position: absolute;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  align-content: center;
+  color: #a60dbf;
+}
+.edit-icon{
+  color: white;
+}
 
 </style>
