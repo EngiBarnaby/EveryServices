@@ -14,13 +14,17 @@
       <v-container>
         <v-row justify="center">
           <v-text-field
+            v-if="blacklist.length !== 0"
             v-debounce:1000ms="searchClient"
             v-model="search"
             class="searchInput"
             label="Поиск"
           ></v-text-field>
         </v-row>
-        <v-row>
+        <v-row><div v-if="blacklist.length === 0" class="d-flex flex-column align-center justify-center mb-4" style="width: 100%" >
+          <img src="@/assets/empty-state.png" style="width: 30% !important" alt="Пусто">
+          <span style="color: gray; font-weight: bold; font-size: 16px">В черном списке пока что никого нет.</span>
+        </div>
           <v-col
             xs="12"
             sm="6"
@@ -34,6 +38,7 @@
               max-width="500"
               elevation="0"
             >
+
               <v-card-title class="d-flex justify-space-between align-center">
                 <span>{{ client.name }}</span>
               </v-card-title>
