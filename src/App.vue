@@ -60,5 +60,8 @@ a {
   border: 1px solid #F2EA1E;  /* padding вокруг плашки */
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
+.v-tab p{
+  margin: 0 !important;
+}
 
 </style>

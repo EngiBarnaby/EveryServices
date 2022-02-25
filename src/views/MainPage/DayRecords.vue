@@ -190,7 +190,9 @@
       <UnconfirmedListOfRecords />
     </v-dialog>
 
-    <v-row class="fill-height" justify="end">
+
+
+    <v-row class="fill-height mt-2" justify="end">
       <v-col>
         <v-sheet class="calendar">
           <v-calendar
@@ -856,7 +858,7 @@ export default {
   justify-content: center;
   align-content: center;
   color: black;
-  padding: 15px;
+  padding: 13px 15px 15px 15px;
   border-radius: 50%;
   border: 1px solid #a60dbf;
   min-height: 50px;

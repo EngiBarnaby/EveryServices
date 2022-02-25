@@ -22,15 +22,68 @@
           <v-spacer></v-spacer>
           <div class="d-flex align-center">
             <div class="d-flex align-center text-center">Неделньный график
-              <v-btn
-                color="primary"
-                fab
-                x-small
-                outlined
-                style="border: none !important;"
+              <v-menu
+                v-model="weekMenu"
+                :close-on-content-click="false"
+                :nudge-width="200"
+                offset-y
               >
-                <v-icon>mdi-pencil</v-icon>
-              </v-btn>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    color="primary"
+                    fab
+                    v-bind="attrs"
+                    v-on="on"
+                    x-small
+                    outlined
+                    style="border: none !important;"
+                  >
+                    <v-icon>mdi-pencil</v-icon>
+                  </v-btn>
+                </template>
+                <v-card>
+                  <v-card-text class="d-flex flex-column">
+                    Рабочие дни недели
+                    <div>
+                    <v-checkbox class="ma-0" v-model="weekDaysHolder[0]" hide-details label="Понедельник"></v-checkbox>
+                    <v-checkbox class="ma-0" v-model="weekDaysHolder[1]" hide-details label="Вторник"></v-checkbox>
+                    <v-checkbox class="ma-0" v-model="weekDaysHolder[2]" hide-details label="Среда"></v-checkbox>
+                    <v-checkbox class="ma-0" v-model="weekDaysHolder[3]" hide-details label="Четверг"></v-checkbox>
+                    <v-checkbox class="ma-0" v-model="weekDaysHolder[4]" hide-details label="Пятница"></v-checkbox>
+                    <v-checkbox class="ma-0" v-model="weekDaysHolder[5]" hide-details label="Суббота"></v-checkbox>
+                    <v-checkbox class="ma-0" v-model="weekDaysHolder[6]" hide-details label="Воскресенье"></v-checkbox>
+                    </div>
+                    <div class="mt-2">
+                    Дата начала графика
+                    <DatePicker v-model="startWeekValue"></DatePicker>
+                    </div>
+                    <div class="mt-2">
+                      Рабочее время
+                      <div class="d-flex align-center justify-space-between">
+                        <v-text-field
+                          outlined
+                          dense
+                          v-model="durationWeekStart"
+                          type="time"
+                          hide-details
+
+                          :rules="[(v) => !!v || 'Обязательное поле']"
+                        ></v-text-field>
+                        <span class="ml-2 mr-2">до</span>
+                        <v-text-field
+                          outlined
+                          dense
+                          v-model="durationWeekEnd"
+                          hide-details
+                          type="time"
+
+                          :rules="[(v) => !!v || 'Обязательное поле']"
+                        ></v-text-field>
+                      </div>
+                    </div>
+                  </v-card-text>
+                </v-card>
+              </v-menu>
             </div>
           <div class="d-flex align-center text-center">Сменный график
             <v-menu
@@ -62,6 +115,28 @@
                   </div>
                   Выберите дату начала
                   <DatePicker v-model="startValue"></DatePicker>
+                  Выберите рабочее время
+                  <div class="d-flex align-center justify-space-between">
+                  <v-text-field
+                    outlined
+                    dense
+                    v-model="durationStart"
+                    type="time"
+                    hide-details
+
+                    :rules="[(v) => !!v || 'Обязательное поле']"
+                  ></v-text-field>
+                    <span class="ml-2 mr-2">до</span>
+                  <v-text-field
+                    outlined
+                    dense
+                    v-model="durationEnd"
+                    hide-details
+                    type="time"
+
+                    :rules="[(v) => !!v || 'Обязательное поле']"
+                  ></v-text-field>
+                  </div>
                   <v-btn
                     class="mt-2"
                     style="color: white !important;"
@@ -75,10 +150,7 @@
           </div>
 
           </div>
-          <v-spacer></v-spacer>
-          <v-spacer></v-spacer>
-          <v-btn>РЕДАКТИРОВАТЬ</v-btn>
-          <v-spacer></v-spacer>
+
           <v-btn
             icon
             class="ma-2"
@@ -138,6 +210,7 @@ export default {
       value:new Date().toISOString().split('T')[0] ,
       sessionMenu:false,
       startValue:'',
+      startWeekValue:'',
       periodStart:null,
       periodEnd:null,
       isLoading:false,
@@ -145,16 +218,29 @@ export default {
       timeData:[],
       calendarData:[],
       dataForEveryDay:{},
+      durationStart:"09:00",
+      durationEnd:"18:00",
 
+
+      durationWeekStart:"09:00",
+      durationWeekEnd:"18:00",
+
+
+      weekMenu:false,
       snackbarText:'',
       snackbarHolder:false,
       snackbarStatus:null,
+
+      weekDaysHolder:[false,false,false,false,false,false,false,]
 
     }
   },
   watch:{
     value(){
       this.fetchData()
+    },
+    weekDaysHolder(){
+      console.log(this.weekDaysHolder)
     }
 
   },
@@ -187,7 +273,7 @@ export default {
     calculateTimeData(){
       this.timeData = []
       for (let i = 0; i < this.periodStart; i++){
-        this.timeData.push(['09:00-18:00'])
+        this.timeData.push([`${this.durationStart}-${this.durationEnd}`])
       }
       for (let i = 0; i < this.periodEnd; i++){
         this.timeData.push(null)
