@@ -194,7 +194,7 @@
         </v-col>
         <v-col xs="12" sm="6" md="4">
           <div class="empty-card mx-auto" @click="createDialog = true">
-            <v-icon x-large> mdi-plus </v-icon>
+            <div class="empty-card_icon"><v-icon class="empty-icon" x-large> mdi-plus </v-icon></div>
           </div>
         </v-col>
       </v-row>
@@ -351,8 +351,8 @@ export default {
 .empty-card {
   height: 450px;
   /*width: 400px;*/
-  border: 1px solid #7b7b7b;
-  border-radius: 25px;
+  border: 2px solid #7b7b7b;
+  border-radius: 4px;
   display: flex;
   justify-content: center;
   align-content: center;
@@ -360,6 +360,18 @@ export default {
 
 .empty-card:hover {
   cursor: pointer;
+  background-color: rgba(123, 123, 123, 0.05);
+  transition: 0.5s;
+  border: 2px solid #a60dbf;
+  box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.1);
+}
+.empty-card:hover .empty-icon{
+  color: #a60dbf !important;
+}
+.empty-card_icon{
+  display: flex;
+  align-items: center;
+  color: #7b7b7b;
 }
 
 .card-body {
