@@ -583,6 +583,8 @@ export default {
       this.id = null;
       this.provided = null;
       this.dialogEventInfo = false;
+      this.addRecordDialog = false;
+
     },
 
     eventClicked({ event }) {
