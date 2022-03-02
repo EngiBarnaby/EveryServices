@@ -136,6 +136,7 @@
           <v-text-field
             outlined
             dense
+            locale="ru-RU"
             v-model="duration"
             type="time"
             label="Длительность"
