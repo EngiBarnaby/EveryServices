@@ -3,10 +3,10 @@
 
 
     <v-container>
-      <v-row justify="center" class="mt-4">
+      <v-row  justify="center" class="mt-4">
         <h1>Ваше расписание </h1>
       </v-row>
-      <div>
+      <div  >
         <v-sheet
           tile
           height="54"
@@ -21,7 +21,7 @@
           </v-btn>
           <v-spacer></v-spacer>
           <div class="d-flex align-center">
-            <div class="d-flex align-center text-center">Неделньный график
+            <div class="d-flex align-center text-center">Недельный график
               <v-menu
                 v-model="weekMenu"
                 :close-on-content-click="false"
@@ -161,35 +161,70 @@
         </v-sheet>
         <v-sheet height="600">
           <v-calendar
-           :loading="isLoading === true"
+           v-if="isLoading == false"
             ref="calendar"
             v-model="value"
             :weekdays="[1, 2, 3, 4, 5, 6, 0]"
             locale="ru-RU"
+           @click:day="editDay"
 
           >
 
             <template v-slot:day-label="{ day, date, month}">
-              <div v-if="value.split('-')[1] == month" >
-                <div v-if="dataForEveryDay[date].working === true" style="background-color: #27AE60; color:white">{{day}}</div>
+              <div style="position: relative" v-if="value.split('-')[1] == month" >
+                <div v-if="dataForEveryDay[date].working === true" style="background-color: #27AE60; color:white;">{{day}}
+
+                </div>
                 <div  v-if="dataForEveryDay[date].working === false" style=" color:black">{{day}}</div>
+                <div  v-if="dataForEveryDay[date].start === true" title="Начало графика" style="top:0;position: absolute;background-color: #a60dbf; width: 16% !important;height: 100% !important;z-index: 1000"></div>
               </div>
             </template>
             <template v-slot:day="{date, month}">
-              <div class="main-content" style="width: 100%; height: 100%" v-if="value.split('-')[1] == month" >
+              <div :key="dataForEveryDay[date].id" class="main-content" style="width: 100%; height: 100%" v-if="value.split('-')[1] == month" >
               <div style="font-size: 0.8rem; position: absolute" v-if="dataForEveryDay[date].ranges !== null">{{ dataForEveryDay[date].ranges[0] }}
               </div>
 <div  class="edit-content">
-  <div  class="edit-block_icon"><v-icon class="edit-icon" >mdi-clock-edit-outline</v-icon></div>
+  <div  class="edit-block_icon"></div>
 </div>
-              </div>
 
+
+              </div>
             </template>
 
 
 
 
           </v-calendar>
+<div v-if="isLoading" style="height:100%" class="d-flex justify-center align-center">
+          <v-progress-circular
+            :size="70"
+            :width="7"
+
+            color="purple"
+            indeterminate
+          ></v-progress-circular>
+</div>
+          <v-dialog
+            v-model="editDayHolder"
+            width="500"
+          >
+            <v-card>
+              <v-card-title style="color:white;background-color: #a60dbf">Редактирование дня</v-card-title>
+              <v-form @submit="sendDateChanges">
+              <v-card-text>
+                <v-switch v-model="selectedDate.working" style="margin: 0" hide-details label="Рабочий день"></v-switch>
+                <div style="margin-top: 8px">
+                Время работы
+                <v-text-field style="width: fit-content" :disabled="!selectedDate.working" required hide-details outlined dense type="time"></v-text-field>
+                </div>
+              </v-card-text>
+                <v-card-actions class="d-flex justify-end">
+                  <v-btn @click="editDayHolder = false">Отмена</v-btn>
+                  <v-btn type="submit" style="background-color:#a60dbf; color:white;">Сохранить</v-btn>
+                </v-card-actions>
+              </v-form>
+            </v-card>
+          </v-dialog>
         </v-sheet>
       </div>
 
@@ -201,6 +236,7 @@
     >
       {{ snackbarText }}
     </v-snackbar>
+
   </div>
 </template>
 
@@ -219,7 +255,7 @@ export default {
       startWeekValue:'',
       periodStart:null,
       periodEnd:null,
-      isLoading:false,
+      isLoading:true,
       periodData:[],
       timeData:[],
       calendarData:[],
@@ -234,6 +270,10 @@ export default {
       snackbarText:'',
       snackbarHolder:false,
       snackbarStatus:null,
+      editDayHolder:false,
+      editDayElement:null,
+      selectedOpen:false,
+      selectedDate: {},
 
       weekDaysHolder:[false,false,false,false,false,false,false,]
 
@@ -249,6 +289,13 @@ export default {
 
   },
   methods:{
+    sendDateChanges(){
+
+    },
+    editDay ({date}) {
+      this.editDayHolder = true
+      this.selectedDate = this.dataForEveryDay[date]
+    },
     openSnackbar(status,text){
       this.snackbarText = text
       this.snackbarStatus = status
@@ -314,7 +361,6 @@ export default {
 
   },
   async mounted(){
-   this.isLoading = true
    await axiosInstance.get(`work_schedules/schedules/actual/${new Date().getFullYear()}/${new Date().getMonth() + 1}`)
     .then(  (response)=>{
       this.calendarData = response.data
@@ -323,8 +369,7 @@ export default {
        }
 
     })
-
-   this.isLoading = false
+    this.isLoading = false
 
   },
 };
@@ -366,5 +411,11 @@ export default {
 .edit-icon{
   color: white;
 }
+.v-input__slot{
+  text-align: center !important;
+  display: flex;
+  justify-content: center;
+}
+
 
 </style>
