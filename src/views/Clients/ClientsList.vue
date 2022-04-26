@@ -225,6 +225,20 @@
                     v-bind="attrs"
                     v-on="on"
                     icon
+                    @click="openHistoryDialog(client)"
+                  >
+                    <v-icon>mdi-book-multiple</v-icon>
+                  </v-btn>
+                </template>
+                <span>История</span>
+              </v-tooltip>
+
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    v-bind="attrs"
+                    v-on="on"
+                    icon
                     @click="onEditClient(client)"
                   >
                     <v-icon>mdi-pencil-outline</v-icon>

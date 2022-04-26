@@ -2,7 +2,7 @@ import axios from "axios";
 import router from "@/router";
 
 const axiosInstance = axios.create({
-  baseURL: "http://everyservices.itpw.ru/",
+  baseURL: "http://dev1.itpw.ru:8006/",
   headers: {
     // Authorization: localStorage.getItem("token")
     //   ? "Bearer " + localStorage.getItem("token")
