@@ -205,19 +205,7 @@
             </div>
 
             <div class="actions">
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn
-                    v-bind="attrs"
-                    v-on="on"
-                    icon
-                    @click="openHistoryDialog(client)"
-                  >
-                    <v-icon>mdi-book-multiple</v-icon>
-                  </v-btn>
-                </template>
-                <span>История</span>
-              </v-tooltip>
+
 
               <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
@@ -376,7 +364,8 @@ export default {
       .then((response)=>{
         console.log(response)
         if (response.status === 201){
-          this.openSnackbar("success", response.data.detail)
+          this.fetchClients()
+          this.openSnackbar("success", 'Клиент успешно создан')
           this.clearAndClose()
         }
         if (response.response.status === 400){
