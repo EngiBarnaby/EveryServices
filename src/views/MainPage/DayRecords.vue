@@ -74,7 +74,15 @@
           ></v-text-field>
 
           <v-btn
+            outlined
             color="success"
+            :disabled="!isValid"
+            type="submit"
+            class="mr-4"
+          >Coхранить</v-btn
+          >
+          <v-btn
+            color="info"
             @click="provideRecord"
             v-if="!provided"
             class="mr-4"
@@ -83,14 +91,7 @@
             Завершить
           </v-btn>
 
-          <v-btn
-            outlined
-            color="info"
-            :disabled="!isValid"
-            type="submit"
-            class="mr-4"
-            >Изменить</v-btn
-          >
+
 
           <v-btn outlined color="error" @click="refuseRecord"
             >Отменить запись</v-btn
@@ -483,6 +484,8 @@ export default {
         .post("records/", params)
         .then((res) => {
           if (res.status === 201) {
+            this.snackbarTextSuccess = 'Запись создана'
+            this.snackbarSuccess = true
             data = res.data;
           }
 
@@ -588,9 +591,7 @@ export default {
 
     },
 
-    eventClicked({ event }) {
-      console.log(event);
-      this.dialogEventInfo = true;
+     eventClicked({ event }) {
       this.provided = event.provided;
       this.cost = event.cost;
       this.duration = event.duration;
@@ -598,6 +599,7 @@ export default {
       this.service_selected = event.service;
       this.time = event.startTime;
       this.id = event.id;
+       this.dialogEventInfo = true;
       Vue.nextTick(() => this.$refs.date_picker.setNewValue(event.startDate));
     },
 

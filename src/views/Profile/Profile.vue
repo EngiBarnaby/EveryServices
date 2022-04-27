@@ -169,6 +169,7 @@
             label="Телефон"
             dark
             style="min-width: 350px"
+            readonly
             v-model="phone"
           ></v-text-field>
           <v-text-field
@@ -176,6 +177,7 @@
             @click:append-outer="changeEmailDialog = true"
             label="Эл. почта"
             dark
+            readonly
             style="min-width: 350px"
             v-model="email"
           ></v-text-field>
