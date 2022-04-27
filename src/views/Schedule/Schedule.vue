@@ -316,6 +316,9 @@ export default {
             this.dataForEveryDay[this.calendarData[i].date.split('.').reverse().join('-')] = {working : this.calendarData[i].working, special : this.calendarData[i].special, start: this.calendarData[i].start , ranges: this.calendarData[i].ranges}
           }
         })
+        .then(()=>{
+          console.log(new Date(this.value))
+        })
       .finally(()=>{
         this.isLoading = false
       })
@@ -342,13 +345,13 @@ export default {
     async addSchedule(){
       await this.calculateTimeData()
       await this.calculatePeriodData()
-      await axiosInstance.post('work_schedules/schedules/',{
+      await axiosInstance.post('work_schedules/schedules/new/',{
         start: this.startValue,
         schedule_days: this.periodData,
         schedule_time: this.timeData
       })
         .then((response)=>{
-            if (response.status === 201){
+            if (response.status === 200){
               this.openSnackbar('success', "Сменный график успешно создан!")
               this.sessionMenu = false
               this.fetchData()
@@ -360,8 +363,9 @@ export default {
     },
 
   },
-  async mounted(){
-   await axiosInstance.get(`work_schedules/schedules/actual/${new Date().getFullYear()}/${new Date().getMonth() + 1}`)
+   mounted(){
+
+    axiosInstance.get(`work_schedules/schedules/actual/${new Date().getFullYear()}/${new Date().getMonth() + 1}`)
     .then(  (response)=>{
       this.calendarData = response.data
        for (let i = 0; i < this.calendarData.length; i++){
@@ -369,8 +373,12 @@ export default {
        }
 
     })
-    this.isLoading = false
+      .then(()=>{
+        this.isLoading = false
+      })
 
+
+    console.log(new Date(this.value))
   },
 };
 </script>
