@@ -15,7 +15,7 @@ const user = {
 
     LOGOUT(state){
       state.userInfo = {}
-      localStorage.removeItem("token")
+      localStorage.clear()
       router.push("/login")
     },
 

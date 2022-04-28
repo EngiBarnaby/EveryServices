@@ -281,12 +281,12 @@ export default {
         })
         .then((res) => {
           if (res.status === 200) {
-            localStorage.setItem("token", res.data.token);
+            console.log(localStorage.token)
+            localStorage.setItem("token", res.data.token)
+            console.log(localStorage.token)
             this.$store.commit("user/SET_USER_INFO", res.data.user);
-            this.$router.push("/");
-          }
-
-          if (res.response.status === 400) {
+            this.$router.push('/');
+          } else if (res.response.status === 400) {
             this.loginTextError = res.response.data.detail;
           }
         })

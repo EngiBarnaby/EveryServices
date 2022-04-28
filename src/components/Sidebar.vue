@@ -123,6 +123,17 @@
             >
           </v-list-item-content>
         </v-list-item>
+        <v-list-item >
+          <v-list-item-icon>
+            <v-icon class="white--text">mdi-message-question-outline</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title class="white--text"
+            >Тех.поддержка</v-list-item-title
+            >
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
   </div>

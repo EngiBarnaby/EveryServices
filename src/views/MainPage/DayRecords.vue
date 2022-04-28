@@ -569,13 +569,17 @@ export default {
     },
 
     getUnconfirmedRecordsCount() {
+      if (this.$route.name === 'login'){ return }
+      setTimeout(
       setInterval(() => {
+        if (this.$route.name === 'login'){ return }
         axiosInstance
           .get("records/?count&confirmed=0&canceled=0")
           .then((res) => {
             this.countUnconfirmedRecords = res.data.count;
           });
-      }, 5000);
+      }, 10000),5000
+    )
     },
 
     closeAndClear() {
@@ -830,7 +834,7 @@ export default {
   async mounted() {
     this.isFetching = false;
 
-    axiosInstance.get("records/?count&confirmed=0&canceled=0").then((res) => {
+    axiosInstance.get("records/?count&confirmed=0&canceled=0/").then((res) => {
       this.countUnconfirmedRecords = res.data.count;
     });
 
@@ -844,7 +848,7 @@ export default {
     let clients = await axiosInstance.get("clients/contacts/?paging=0");
     this.clients = clients.data.results;
 
-    let services = await axiosInstance.get("services/services/opt");
+    let services = await axiosInstance.get("services/services/opt/");
     this.services = services.data;
 
     await this.fetchData();

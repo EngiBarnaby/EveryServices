@@ -309,7 +309,7 @@ export default {
     },
     async fetchData(){
       this.isLoading = true
-      await axiosInstance.get(`work_schedules/schedules/actual/${this.value.split('-')[0]}/${this.value.split('-')[1]}`)
+      await axiosInstance.get(`work_schedules/schedules/actual/${this.value.split('-')[0]}/${this.value.split('-')[1]}/`)
         .then(  (response)=>{
           this.calendarData = response.data
           for (let i = 0; i < this.calendarData.length; i++){
@@ -365,7 +365,7 @@ export default {
   },
    mounted(){
 
-    axiosInstance.get(`work_schedules/schedules/actual/${new Date().getFullYear()}/${new Date().getMonth() + 1}`)
+    axiosInstance.get(`work_schedules/schedules/actual/${new Date().getFullYear()}/${new Date().getMonth() + 1}/`)
     .then(  (response)=>{
       this.calendarData = response.data
        for (let i = 0; i < this.calendarData.length; i++){
