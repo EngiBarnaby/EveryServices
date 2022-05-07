@@ -397,25 +397,6 @@ export default {
         this.periodData.push(false)
       }
     },
-    calculateTimeData(){
-      this.timeData = []
-      for (let i = 0; i < this.periodStart; i++){
-        this.timeData.push(`${this.durationStart}-${this.durationEnd}`)
-      }
-      for (let i = 0; i < this.periodEnd; i++){
-        this.timeData.push(null)
-      }
-    },
-    calculateWeekTimeData(){
-      this.timeWeekData = []
-      for (let i = 0; i < this.periodStart; i++){
-        this.timeWeekData.push([`${this.durationWeekStart}-${this.durationWeekEnd}`])
-      }
-      for (let i = 0; i < this.periodEnd; i++){
-        this.timeWeekData.push(null)
-      }
-    },
-
     async addWeekSchedule(){
       let timeResult = []
       for(let i = 0; i < this.weekDaysHolder.length; i++){
@@ -426,7 +407,6 @@ export default {
         }
 
       }
-
       await axiosInstance.post('work_schedules/schedules/new/',{
         start: this.startWeekValue,
         schedule_days: this.weekDaysHolder,
@@ -435,6 +415,7 @@ export default {
         .then((response)=>{
           if (response.status === 200){
             this.openSnackbar('success', "Недельный график успешно создан!")
+            this.closeAndClearWeek()
             this.weekMenu = false
             this.fetchData()
           }
@@ -442,16 +423,21 @@ export default {
             this.openSnackbar('error', 'На эту дату график уже создан')
           }
         })
-        .then((response)=>{
-          if (response.status === 200){
-            this.openSnackbar('success', "Сменный график успешно создан!")
-            this.sessionMenu = false
-            this.fetchData()
-          }
-          if (response.response.status === 400){
-            this.openSnackbar('error', 'На эту дату график уже создан')
-          }
-        })
+    },
+    closeAndClear() {
+      this.durationStart = null
+      this.durationEnd = null
+      this.periodEnd = null
+      this.periodStart = null
+      this.startValue = ''
+      this.timeData = []
+    },
+    closeAndClearWeek() {
+      this.weekDaysHolder = [false,false,false,false,false,false,false,]
+      this.startWeekValue = ''
+      this.durationWeekEnd = null
+      this.durationWeekStart = null
+      this.timeWeekData = []
     },
     async addSchedule(){
 
@@ -473,6 +459,8 @@ export default {
             if (response.status === 200){
               this.openSnackbar('success', "Сменный график успешно создан!")
               this.sessionMenu = false
+              this.closeAndClear()
+              timeResult = []
               this.fetchData()
             }
             if (response.response.status === 400){
@@ -497,7 +485,6 @@ export default {
       })
 
 
-    console.log(new Date(this.value))
   },
 };
 </script>
