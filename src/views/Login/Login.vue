@@ -285,7 +285,7 @@ export default {
             localStorage.setItem("token", res.data.token)
             console.log(localStorage.token)
             this.$store.commit("user/SET_USER_INFO", res.data.user);
-            this.$router.push('/');
+            this.$router.go(0);
           } else if (res.response.status === 400) {
             this.loginTextError = res.response.data.detail;
           }

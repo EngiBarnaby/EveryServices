@@ -41,7 +41,8 @@
                     <v-icon>mdi-pencil</v-icon>
                   </v-btn>
                 </template>
-                <v-card>
+                <v-card style="max-width: 265px">
+                  <v-form @submit.prevent="addWeekSchedule">
                   <v-card-text class="d-flex flex-column">
                     Рабочие дни недели
                     <div>
@@ -79,9 +80,30 @@
 
                           :rules="[(v) => !!v || 'Обязательное поле']"
                         ></v-text-field>
+
                       </div>
                     </div>
+                    <div v-if="timeWeekData.length !== 0" class="time-periods_block">
+                      <div @click="deletePeriod(index)" class="time-period" :key="time" v-for="(time, index) in timeWeekData"> {{time}}</div>
+                    </div>
+                    <v-btn
+                      class="mt-2"
+                      style="color: white !important;"
+                      color="success"
+                      elevation="2"
+                      @click="addWeekPeriod"
+                      :disabled="!durationWeekStart || !durationWeekEnd"
+                    >Добавить промежуток</v-btn>
+                    <v-btn
+                      class="mt-2"
+                      style="color: white !important;"
+                      color="#a60dbf"
+                      elevation="2"
+                      type="submit"
+                      :disabled="timeWeekData.length === 0"
+                    >Сохранить</v-btn>
                   </v-card-text>
+                  </v-form>
                 </v-card>
               </v-menu>
             </div>
@@ -210,13 +232,13 @@
           >
             <v-card>
               <v-card-title style="color:white;background-color: #a60dbf">Редактирование дня</v-card-title>
-              <v-form @submit="sendDateChanges">
+              <v-form @submit.prevent="sendDateChanges">
               <v-card-text>
                 <v-switch v-model="selectedDate.working" style="margin: 0" hide-details label="Рабочий день"></v-switch>
-                <div style="margin-top: 8px">
-                Время работы
-                <v-text-field style="width: fit-content" :disabled="!selectedDate.working" required hide-details outlined dense type="time"></v-text-field>
-                </div>
+<!--                <div style="margin-top: 8px">-->
+<!--                Время работы-->
+<!--                <v-text-field style="width: fit-content" :disabled="!selectedDate.working" required hide-details outlined dense type="time"></v-text-field>-->
+<!--                </div>-->
               </v-card-text>
                 <v-card-actions class="d-flex justify-end">
                   <v-btn @click="editDayHolder = false">Отмена</v-btn>
@@ -258,6 +280,7 @@ export default {
       isLoading:true,
       periodData:[],
       timeData:[],
+      timeWeekData:[],
       calendarData:[],
       dataForEveryDay:{},
       durationStart:"09:00",
@@ -289,12 +312,31 @@ export default {
 
   },
   methods:{
-    sendDateChanges(){
+    async deletePeriod(index){
+   this.timeWeekData.splice(index,1)
+      },
+    async addWeekPeriod(){
+      if (this.timeWeekData.includes(this.durationWeekStart + '-' + this.durationWeekEnd)){
+        alert('Дубликат')
+        return
+      }
+        this.timeWeekData.push(this.durationWeekStart + '-' + this.durationWeekEnd)
+    },
+    async sendDateChanges(){
+     await axiosInstance.post('work_schedules/special_schedules/new/',this.selectedDate)
+       .then((response)=>{
+         this.dataForEveryDay[response.data.date.split('.').reverse().join('-')] = response.data
+       })
+      .catch((e)=>{
+        console.error(e)
+      })
+
 
     },
     editDay ({date}) {
+      this.selectedDate =JSON.parse(JSON.stringify(this.dataForEveryDay[date])) //deep copy
+      this.selectedDate = {...this.selectedDate, date: date.split('-').reverse().join('.')}
       this.editDayHolder = true
-      this.selectedDate = this.dataForEveryDay[date]
     },
     openSnackbar(status,text){
       this.snackbarText = text
@@ -341,6 +383,53 @@ export default {
       for (let i = 0; i < this.periodEnd; i++){
         this.periodData.push(false)
       }
+    },
+    calculateWeekTimeData(){
+      this.timeData = []
+      for (let i = 0; i < this.periodStart; i++){
+        this.timeData.push([`${this.durationStart}-${this.durationEnd}`])
+      }
+      for (let i = 0; i < this.periodEnd; i++){
+        this.timeData.push(null)
+      }
+    },
+    async addWeekSchedule(){
+      let timeResult = []
+      this.calculateWeekTimeData()
+      for(let i = 0; i < this.weekDaysHolder.length; i++){
+        if (this.weekDaysHolder[i] === true){
+          timeResult.push(this.timeWeekData)
+        } else {
+          timeResult.push(null)
+        }
+
+      }
+
+      await axiosInstance.post('work_schedules/schedules/new/',{
+        start: this.startWeekValue,
+        schedule_days: this.weekDaysHolder,
+        schedule_time: timeResult
+      })
+        .then((response)=>{
+          if (response.status === 200){
+            this.openSnackbar('success', "Недельный график успешно создан!")
+            this.weekMenu = false
+            this.fetchData()
+          }
+          if (response.response.status === 400){
+            this.openSnackbar('error', 'На эту дату график уже создан')
+          }
+        })
+        .then((response)=>{
+          if (response.status === 200){
+            this.openSnackbar('success', "Сменный график успешно создан!")
+            this.sessionMenu = false
+            this.fetchData()
+          }
+          if (response.response.status === 400){
+            this.openSnackbar('error', 'На эту дату график уже создан')
+          }
+        })
     },
     async addSchedule(){
       await this.calculateTimeData()
@@ -423,6 +512,38 @@ export default {
   text-align: center !important;
   display: flex;
   justify-content: center;
+}
+.time-periods_block{
+  margin-top: 0.5rem;
+  max-width: 100%;
+  max-height: 10rem;
+  overflow-y: auto;
+  background-color: #eaeaea;
+  border: 1px solid rgba(157, 157, 157, 0.5);
+  border-radius:4px ;
+  display: flex;
+  gap: 4px;
+  flex-grow: 2;
+  flex-wrap: wrap;
+  padding: 4px;
+}
+.time-period{
+  background-color: white;
+  flex-grow: 2;
+  flex-shrink: 1;
+  flex-basis: 3rem;
+  height: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.time-period:hover{
+  background-color: #efefef;
+  cursor: pointer;
+  border: #ec0000 1px solid;
+  border-radius: 4px;
 }
 
 
