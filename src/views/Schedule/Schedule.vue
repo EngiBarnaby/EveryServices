@@ -84,7 +84,7 @@
                       </div>
                     </div>
                     <div v-if="timeWeekData.length !== 0" class="time-periods_block">
-                      <div @click="deletePeriod(index)" class="time-period" :key="time" v-for="(time, index) in timeWeekData"> {{time}}</div>
+                      <div @click="deleteWeekPeriod(index)" class="time-period" :key="time" v-for="(time, index) in timeWeekData"> {{time}}</div>
                     </div>
                     <v-btn
                       class="mt-2"
@@ -159,6 +159,17 @@
                     :rules="[(v) => !!v || 'Обязательное поле']"
                   ></v-text-field>
                   </div>
+                  <div v-if="timeData.length !== 0" class="time-periods_block">
+                    <div @click="deletePeriod(index)" class="time-period" :key="time" v-for="(time, index) in timeData"> {{time}}</div>
+                  </div>
+                  <v-btn
+                    class="mt-2"
+                    style="color: white !important;"
+                    color="success"
+                    elevation="2"
+                    @click="addPeriod"
+                    :disabled="!durationStart || !durationEnd"
+                  >Добавить промежуток</v-btn>
                   <v-btn
                     class="mt-2"
                     style="color: white !important;"
@@ -312,7 +323,7 @@ export default {
 
   },
   methods:{
-    async deletePeriod(index){
+    async deleteWeekPeriod(index){
    this.timeWeekData.splice(index,1)
       },
     async addWeekPeriod(){
@@ -321,6 +332,16 @@ export default {
         return
       }
         this.timeWeekData.push(this.durationWeekStart + '-' + this.durationWeekEnd)
+    },
+    async addPeriod(){
+      if (this.timeData.includes(this.durationStart + '-' + this.durationEnd)){
+        alert('Дубликат')
+        return
+      }
+      this.timeData.push(this.durationStart + '-' + this.durationEnd)
+    },
+    async deletePeriod(index){
+      this.timeData.splice(index,1)
     },
     async sendDateChanges(){
      await axiosInstance.post('work_schedules/special_schedules/new/',this.selectedDate)
@@ -366,15 +387,7 @@ export default {
       })
     },
 
-    calculateTimeData(){
-      this.timeData = []
-      for (let i = 0; i < this.periodStart; i++){
-        this.timeData.push([`${this.durationStart}-${this.durationEnd}`])
-      }
-      for (let i = 0; i < this.periodEnd; i++){
-        this.timeData.push(null)
-      }
-    },
+
     calculatePeriodData(){
       this.periodData = []
       for (let i = 0; i < this.periodStart; i++){
@@ -384,18 +397,27 @@ export default {
         this.periodData.push(false)
       }
     },
-    calculateWeekTimeData(){
+    calculateTimeData(){
       this.timeData = []
       for (let i = 0; i < this.periodStart; i++){
-        this.timeData.push([`${this.durationStart}-${this.durationEnd}`])
+        this.timeData.push(`${this.durationStart}-${this.durationEnd}`)
       }
       for (let i = 0; i < this.periodEnd; i++){
         this.timeData.push(null)
       }
     },
+    calculateWeekTimeData(){
+      this.timeWeekData = []
+      for (let i = 0; i < this.periodStart; i++){
+        this.timeWeekData.push([`${this.durationWeekStart}-${this.durationWeekEnd}`])
+      }
+      for (let i = 0; i < this.periodEnd; i++){
+        this.timeWeekData.push(null)
+      }
+    },
+
     async addWeekSchedule(){
       let timeResult = []
-      this.calculateWeekTimeData()
       for(let i = 0; i < this.weekDaysHolder.length; i++){
         if (this.weekDaysHolder[i] === true){
           timeResult.push(this.timeWeekData)
@@ -432,12 +454,20 @@ export default {
         })
     },
     async addSchedule(){
-      await this.calculateTimeData()
+
+      let timeResult = []
+      for (let i = 0; i < this.periodStart; i++){
+        timeResult.push(this.timeData)
+      }
+      for (let i = 0; i < this.periodEnd; i++){
+        timeResult.push(null)
+      }
+
       await this.calculatePeriodData()
       await axiosInstance.post('work_schedules/schedules/new/',{
         start: this.startValue,
         schedule_days: this.periodData,
-        schedule_time: this.timeData
+        schedule_time: timeResult
       })
         .then((response)=>{
             if (response.status === 200){
