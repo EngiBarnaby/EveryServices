@@ -214,7 +214,9 @@
             </template>
             <template v-slot:day="{date, month}">
               <div :key="dataForEveryDay[date].id" class="main-content" style="width: 100%; height: 100%" v-if="value.split('-')[1] == month" >
-              <div style="font-size: 0.8rem; position: absolute" v-if="dataForEveryDay[date].ranges !== null">{{ dataForEveryDay[date].ranges[0] }}
+              <div style="display:flex;flex-direction: column;font-size: 0.8rem; position: absolute" v-if="dataForEveryDay[date].ranges !== null">
+                <span :key="item" v-for="item in dataForEveryDay[date].ranges">{{item}}</span>
+
               </div>
 <div  class="edit-content">
   <div  class="edit-block_icon"></div>
