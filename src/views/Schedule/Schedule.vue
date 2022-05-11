@@ -253,6 +253,9 @@
 <!--                <v-text-field style="width: fit-content" :disabled="!selectedDate.working" required hide-details outlined dense type="time"></v-text-field>-->
 <!--                </div>-->
               </v-card-text>
+                <div v-if="selectedDate.ranges !== 0" class="time-periods_block-day">
+                  <div @click="deleteDayPeriod(index)" class="time-period_day" :key="time" v-for="(time, index) in selectedDate.ranges"> {{time}}</div>
+                </div>
                 <v-card-actions class="d-flex justify-end">
                   <v-btn @click="editDayHolder = false">Отмена</v-btn>
                   <v-btn type="submit" style="background-color:#a60dbf; color:white;">Сохранить</v-btn>
@@ -310,7 +313,6 @@ export default {
       editDayElement:null,
       selectedOpen:false,
       selectedDate: {},
-
       weekDaysHolder:[false,false,false,false,false,false,false,]
 
     }
@@ -342,13 +344,24 @@ export default {
       }
       this.timeData.push(this.durationStart + '-' + this.durationEnd)
     },
+    async deleteDayPeriod(index){
+      this.selectedDate.ranges.splice(index,1)
+    },
     async deletePeriod(index){
       this.timeData.splice(index,1)
     },
-    async sendDateChanges(){
-     await axiosInstance.post('work_schedules/special_schedules/new/',this.selectedDate)
-       .then((response)=>{
-         this.dataForEveryDay[response.data.date.split('.').reverse().join('-')] = response.data
+     sendDateChanges(){
+      axiosInstance.post('work_schedules/special_schedules/new/',{
+       working: this.selectedDate.working,
+       times: this.selectedDate.ranges,
+       date: this.selectedDate.date
+     })
+       .then(()=>{
+         this.dataForEveryDay[this.selectedDate.date.split('.').reverse().join('-')] = {
+           ranges:this.selectedDate.ranges,
+           date: this.selectedDate.date,
+           working: this.selectedDate.working
+         }
        })
       .catch((e)=>{
         console.error(e)
@@ -359,6 +372,7 @@ export default {
     editDay ({date}) {
       this.selectedDate =JSON.parse(JSON.stringify(this.dataForEveryDay[date])) //deep copy
       this.selectedDate = {...this.selectedDate, date: date.split('-').reverse().join('.')}
+      console.log(this.selectedDate)
       this.editDayHolder = true
     },
     openSnackbar(status,text){
@@ -559,6 +573,38 @@ export default {
   border-radius: 4px;
 }
 .time-period:hover{
+  background-color: #efefef;
+  cursor: pointer;
+  border: #ec0000 1px solid;
+  border-radius: 4px;
+}
+.time-periods_block-day{
+  margin-top: 0.5rem;
+  max-width: 100%;
+  max-height: 10rem;
+  overflow-y: auto;
+  background-color: #eaeaea;
+  border: 1px solid rgba(157, 157, 157, 0.5);
+  border-radius:4px ;
+  display: flex;
+  gap: 4px;
+  flex-grow: 2;
+  flex-wrap: wrap;
+  padding: 4px;
+}
+.time-period_day{
+  background-color: white;
+  flex-grow: 2;
+  flex-shrink: 1;
+  flex-basis: 3rem;
+  height: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.time-period_day:hover{
   background-color: #efefef;
   cursor: pointer;
   border: #ec0000 1px solid;
